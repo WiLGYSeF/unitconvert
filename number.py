@@ -120,7 +120,7 @@ class Number:
 		return n
 
 	def string(self, converts="", space=False, caret=False):
-		order = ["A", "kg", "m", "s", "K", "mol", "cd"]
+		order = ["kg", "m", "s", "K", "A", "mol", "cd"]
 		s = ""
 
 		n = self
