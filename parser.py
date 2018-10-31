@@ -15,7 +15,7 @@ def parse(num, numstr):
 	r = _number(lex)
 
 	if not r:
-		raise ValueError("invalid number (index " + str(lex.peekToken().character) + ", " + errmsg + "): " + numstr)
+		raise ValueError("invalid number (char " + str(lex.peekToken().character) + ", " + errmsg + "): " + numstr)
 	return r
 
 # <number> = <float> [ENOT] {SCONST [CARET] [<float>]}

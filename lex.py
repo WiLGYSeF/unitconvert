@@ -32,7 +32,6 @@ class Lex:
 	def getNextToken(self):
 		while True:
 			ch = self.stream.get()
-			print(ch, self.stream.tell())
 			if ch is None:
 				break
 
