@@ -15,6 +15,11 @@ class Token:
 			return self.tokentype == o.tokentype and self.lexeme == o.lexeme
 		return self.tokentype == o
 
+	def __ne__(self, o):
+		if isinstance(o, Token):
+			return self.tokentype != o.tokentype or self.lexeme != o.lexeme
+		return self.tokentype != o
+
 	def __str__(self):
 		s = str(self.tokentype)
 		if len(self.lexeme) != 0:

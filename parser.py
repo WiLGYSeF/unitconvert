@@ -51,13 +51,13 @@ def _number(lex):
 		stok = token
 		token = lex.getToken()
 
-		if token.tokentype != TokenType.CARET:
+		if token != TokenType.CARET:
 			lex.ungetToken(token)
 
 		power = 1
 		n = _float(lex)
 		if n is None:
-			if token.tokentype != TokenType.DONE and token.tokentype != TokenType.SCONST:
+			if token != TokenType.DONE and token != TokenType.SCONST:
 				errmsg = "expected number"
 				return None
 		else:
