@@ -36,7 +36,6 @@ def _number(lex):
 	if token == TokenType.ENOT:
 		n = _float(lex)
 		if n is None:
-			errmsg = "expected number"
 			return None
 
 		num.magnitude *= 10 ** n
@@ -51,12 +50,17 @@ def _number(lex):
 
 		stok = token
 		token = lex.getToken()
+
 		if token.tokentype != TokenType.CARET:
 			lex.ungetToken(token)
 
 		power = 1
 		n = _float(lex)
-		if n is not None:
+		if n is None:
+			if token.tokentype != TokenType.DONE and token.tokentype != TokenType.SCONST:
+				errmsg = "expected number"
+				return None
+		else:
 			power = n
 
 		unitParse(num, stok.lexeme, power)
@@ -89,7 +93,7 @@ def _float(lex):
 			if token == TokenType.ICONST:
 				return float(wpart + "." + token.lexeme) * negative
 
-			token = lex.getToken()
+			lex.ungetToken(token)
 			return int(wpart) * negative
 
 		lex.ungetToken(token)
