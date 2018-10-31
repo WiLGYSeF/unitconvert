@@ -120,6 +120,7 @@ def unitParse( num, unitstr, power):
 	while i < len(unitstr):
 		#triedprefix: if parsing with a prefix fails, try again without a prefix
 		if triedprefix is None:
+			#check if the unit has a prefix
 			if i != len(unitstr) - 1 and unitstr[i] in units.prefixmap:
 				prefix = unitstr[i]
 				prefixmult = units.prefixmap[prefix]
@@ -130,6 +131,7 @@ def unitParse( num, unitstr, power):
 			i = triedprefix
 			triedprefix = None
 
+		#find longest matching unit in table
 		j = len(unitstr)
 		while i <= j and unitstr[i:j] not in units.unitmap:
 			j -= 1
@@ -138,15 +140,17 @@ def unitParse( num, unitstr, power):
 			ustr = unitstr[i:j]
 			multiplier, unitdict = units.unitmap[ustr]
 
+			#power only applies to last unit if unitstr contains multiple units
+
 			if j == len(unitstr):
 				num.magnitude *= multiplier ** power * prefixmult
+
+				for key in unitdict:
+					num.base[key] += unitdict[key] * power
 			else:
 				num.magnitude *= multiplier * prefixmult
 
-			for key in unitdict:
-				if j == len(unitstr):
-					num.base[key] += unitdict[key] * power
-				else:
+				for key in unitdict:
 					num.base[key] += unitdict[key]
 
 			ustr = prefix + ustr

@@ -142,6 +142,7 @@ class Number:
 					if space:
 						converts += " "
 
+			#take difference from converts units
 			n.magnitude /= c.magnitude
 			for key in c.base:
 				n.base[key] -= c.base[key]
