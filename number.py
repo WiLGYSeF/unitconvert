@@ -6,11 +6,7 @@ class Number:
 	base = {}
 	units = {}
 
-	def __init__(self, num):
-		if isinstance(num, Number):
-			self.copy(num)
-			return
-
+	def __init__(self, num=None):
 		self.base = {
 			"kg": 0,
 			"m": 0,
@@ -21,6 +17,10 @@ class Number:
 			"cd": 0
 		}
 		self.units = {}
+
+		if num is None:
+			return
+
 		r = Parser(self, num)
 
 	def __add__(self, o):
@@ -29,7 +29,7 @@ class Number:
 		if self.base != o.base:
 			raise TypeError("units do not match")
 
-		n = Number(self)
+		n = self.copy()
 		n.magnitude += o.magnitude
 		return n
 
@@ -39,7 +39,7 @@ class Number:
 		if self.base != o.base:
 			raise TypeError("units do not match")
 
-		n = Number(self)
+		n = self.copy()
 		n.magnitude -= o.magnitude
 		return n
 
@@ -47,7 +47,7 @@ class Number:
 		if not isinstance(o, Number):
 			raise TypeError("must be Number")
 
-		n = Number(self)
+		n = self.copy()
 		for key in n.base:
 			n.base[key] += o.base[key]
 		n.units.update(o.units)
@@ -59,7 +59,7 @@ class Number:
 		if not isinstance(o, Number):
 			raise TypeError("must be Number")
 
-		n = Number(self)
+		n = self.copy()
 		for key in n.base:
 			n.base[key] -= o.base[key]
 		n.units.update(o.units)
@@ -105,12 +105,14 @@ class Number:
 			raise TypeError("units do not match")
 		return n.magnitude >= o.magnitude
 
-	def copy(self, o):
-		self.magnitude = o.magnitude
+	def copy(self):
+		n = Number()
+		n.magnitude = self.magnitude
 
 		#copy() is shallow copy
-		self.base = o.base.copy()
-		self.units = o.units.copy()
+		n.base = self.base.copy()
+		n.units = self.units.copy()
+		return n
 
 	def string(self, converts=""):
 		order = ["A", "kg", "m", "s", "K", "mol", "cd"]
@@ -120,7 +122,7 @@ class Number:
 
 		if converts != "":
 			c = Number("1 " + converts)
-			n = Number(self)
+			n = self.copy()
 
 			converts = ""
 			for key in c.units:
