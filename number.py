@@ -45,7 +45,8 @@ class Number:
 
 	def __mul__(self, o):
 		if not isinstance(o, Number):
-			raise TypeError("must be Number")
+			n.magnitude *= o
+			return n
 
 		n = self.copy()
 		for key in n.base:
@@ -57,7 +58,8 @@ class Number:
 
 	def __truediv__(self, o):
 		if not isinstance(o, Number):
-			raise TypeError("must be Number")
+			n.magnitude /= o
+			return n
 
 		n = self.copy()
 		for key in n.base:
