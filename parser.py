@@ -1,240 +1,167 @@
-import units
+from lex import Lex
 from stringstream import StringStream
 from token import Token, TokenType
 
-class Parser:
-	tokenlist = []
-	offset = 0
-	offsetstore = []
+import units
 
-	def __init__(self, num, numstr=None):
-		if numstr is None:
-			return
-		if not self.parse(num, numstr):
-			raise ValueError("invalid number: " + numstr)
+#temporary global variable
+errmsg = ""
 
-	def parse(self, num, numstr):
-		self.tokenlist = []
-		self.offset = 0
-		self.offsetstore = []
+def parse(num, numstr):
+	if numstr is None:
+		return
 
-		stream = StringStream(numstr)
-		token = Token(TokenType.PLUS) #throwaway
+	lex = Lex(StringStream(numstr))
+	r = _number(lex)
 
-		while token != TokenType.DONE and token != TokenType.ERR:
-			token = self.lex(stream)
-			self.tokenlist.append(token)
+	if not r:
+		raise ValueError("invalid number (index " + str(lex.peekToken().character) + ", " + errmsg + "): " + numstr)
+	return r
 
-		for e in self.tokenlist:
-			print(e)
+# <number> = <float> [ENOT] {SCONST [CARET] [<float>]}
+def _number(lex):
+	from number import Number
 
-		return self._number(num)
+	global errmsg
 
-	# <number> = <float> [ENOT] {SCONST [CARET] [<float>]}
-	def _number(self, num):
-		n = self._float()
-		if n is None:
-			return False
+	num = Number()
 
-		num.magnitude = n
-
-		token = self._getToken()
-		if token == TokenType.ENOT:
-			n = self._float()
-			if n is None:
-				return False
-
-			num.magnitude *= 10 ** n
-
-		while True:
-			if token is None or token == TokenType.DONE:
-				break
-			if token != TokenType.SCONST:
-				return False
-
-			stok = token
-			token = self._getToken()
-			if token.tokentype != TokenType.CARET:
-				self._ungetToken()
-
-			power = 1
-			n = self._float()
-			if n is not None:
-				power = n
-
-			self.unitParse(num, stok.lexeme, power)
-			token = self._getToken()
-
-		return True
-
-	# <float> = [PLUS|MINUS] ICONST [PERIOD [ICONST]]
-	# <float> = [PLUS|MINUS] PERIOD ICONST
-	def _float(self):
-		self._storeOffset()
-		negative = 1
-		n = 0
-
-		token = self._getToken()
-
-		if token == TokenType.PLUS:
-			token = self._getToken()
-		elif token == TokenType.MINUS:
-			negative = -1
-			token = self._getToken()
-
-		if token == TokenType.ICONST:
-			wpart = token.lexeme
-
-			token = self._getToken()
-			if token == TokenType.PERIOD:
-				token = self._getToken()
-				if token == TokenType.ICONST:
-					return float(wpart + "." + token.lexeme) * negative
-
-				self._loadOffset()
-				return None
-
-			self._ungetToken()
-			return int(wpart) * negative
-		elif token == TokenType.PERIOD:
-			token = self._getToken()
-			if token == TokenType.ICONST:
-				return float("0." + token.lexeme) * negative
-
-			self._loadOffset()
-			return None
-
-		self._loadOffset()
+	n = _float(lex)
+	if n is None:
 		return None
 
-	def unitParse(self, num, unitstr, power):
-		prefix = ""
-		prefixmult = 1
-		i = 0
-		triedprefix = None
+	num.magnitude = n
 
-		while i < len(unitstr):
-			#triedprefix: if parsing with a prefix fails, try again without a prefix
-			if triedprefix is None:
-				if i != len(unitstr) - 1 and unitstr[i] in units.prefixmap:
-					prefix = unitstr[i]
-					prefixmult = units.prefixmap[prefix]
-					triedprefix = i
-					i += 1
-			else:
-				prefixmult = 1
-				i = triedprefix
-				triedprefix = None
-
-			j = len(unitstr)
-			while i <= j and unitstr[i:j] not in units.unitmap:
-				j -= 1
-
-			if i <= j:
-				ustr = unitstr[i:j]
-				multiplier, unitdict = units.unitmap[ustr]
-
-				if j == len(unitstr):
-					num.magnitude *= multiplier ** power * prefixmult
-				else:
-					num.magnitude *= multiplier * prefixmult
-
-				for key in unitdict:
-					if j == len(unitstr):
-						num.base[key] += unitdict[key] * power
-					else:
-						num.base[key] += unitdict[key]
-
-				ustr = prefix + ustr
-				if ustr in num.units:
-					if j == len(unitstr):
-						num.units[ustr] += power
-					else:
-						num.units[ustr] += 1
-				else:
-					if j == len(unitstr):
-						num.units[ustr] = power
-					else:
-						num.units[ustr] = 1
-
-				prefix = ""
-				prefixmult = 1
-				triedprefix = None
-			else:
-				if triedprefix is None:
-					raise ValueError("unknown unit: " + unitstr[i:])
-
-			i = j
-
-	def lex(self, stream):
-		while True:
-			ch = stream.get()
-			if ch is None:
-				break
-
-			if ch == " " or ch == "\t":
-				continue
-			if ch == "+":
-				return Token(TokenType.PLUS)
-			if ch == "-":
-				return Token(TokenType.MINUS)
-			if ch == "^":
-				return Token(TokenType.CARET)
-			if ch.isdigit():
-				s = ch
-				while True:
-					ch = stream.get()
-					if ch is None:
-						break
-					if ch.isdigit():
-						s += ch
-					else:
-						stream.unget()
-						break
-
-				return Token(TokenType.ICONST, s)
-			if ch == ".":
-				return Token(TokenType.PERIOD)
-			if ch == ",":
-				return Token(TokenType.COMMA)
-			if ch == "E" or ch == "e":
-				if stream.peek().isalpha():
-					stream.unget()
-				else:
-					return Token(TokenType.ENOT, ch)
-			if ch.isalpha():
-				s = ch
-				while True:
-					ch = stream.get()
-					if ch is None:
-						break
-					if ch.isalpha():
-						s += ch
-					else:
-						stream.unget()
-						break
-
-				return Token(TokenType.SCONST, s)
-
-			return Token(TokenType.ERR, ch)
-		return Token(TokenType.DONE)
-
-	def _getToken(self):
-		if self.offset == len(self.tokenlist):
+	token = lex.getToken()
+	if token == TokenType.ENOT:
+		n = _float(lex)
+		if n is None:
+			errmsg = "expected number"
 			return None
-		t = self.tokenlist[self.offset]
-		self.offset += 1
-		return t
 
-	def _ungetToken(self):
-		if self.offset == 0:
-			return
-		self.offset -= 1
+		num.magnitude *= 10 ** n
 
-	def _loadOffset(self):
-		if len(self.offsetstore) == 0:
-			return
-		self.offset = self.offsetstore.pop()
+	while True:
+		if token is None or token == TokenType.DONE:
+			break
+		if token != TokenType.SCONST:
+			lex.ungetToken(token)
+			errmsg = "expected unit"
+			return None
 
-	def _storeOffset(self):
-		self.offsetstore.append(self.offset)
+		stok = token
+		token = lex.getToken()
+		if token.tokentype != TokenType.CARET:
+			lex.ungetToken(token)
+
+		power = 1
+		n = _float(lex)
+		if n is not None:
+			power = n
+
+		unitParse(num, stok.lexeme, power)
+		token = lex.getToken()
+
+	return num
+
+# <float> = [PLUS|MINUS] ICONST [PERIOD [ICONST]]
+# <float> = [PLUS|MINUS] PERIOD ICONST
+def _float(lex):
+	global errmsg
+
+	negative = 1
+	n = 0
+
+	token = lex.getToken()
+
+	if token == TokenType.PLUS:
+		token = lex.getToken()
+	elif token == TokenType.MINUS:
+		negative = -1
+		token = lex.getToken()
+
+	if token == TokenType.ICONST:
+		wpart = token.lexeme
+
+		token = lex.getToken()
+		if token == TokenType.PERIOD:
+			token = lex.getToken()
+			if token == TokenType.ICONST:
+				return float(wpart + "." + token.lexeme) * negative
+
+			token = lex.getToken()
+			return int(wpart) * negative
+
+		lex.ungetToken(token)
+		return int(wpart) * negative
+	elif token == TokenType.PERIOD:
+		token = lex.getToken()
+		if token == TokenType.ICONST:
+			return float("0." + token.lexeme) * negative
+
+		lex.ungetToken(token)
+		errmsg = "expected integer"
+		return None
+
+	lex.ungetToken(token)
+	errmsg = "expected number"
+	return None
+
+def unitParse( num, unitstr, power):
+	prefix = ""
+	prefixmult = 1
+	i = 0
+	triedprefix = None
+
+	while i < len(unitstr):
+		#triedprefix: if parsing with a prefix fails, try again without a prefix
+		if triedprefix is None:
+			if i != len(unitstr) - 1 and unitstr[i] in units.prefixmap:
+				prefix = unitstr[i]
+				prefixmult = units.prefixmap[prefix]
+				triedprefix = i
+				i += 1
+		else:
+			prefixmult = 1
+			i = triedprefix
+			triedprefix = None
+
+		j = len(unitstr)
+		while i <= j and unitstr[i:j] not in units.unitmap:
+			j -= 1
+
+		if i <= j:
+			ustr = unitstr[i:j]
+			multiplier, unitdict = units.unitmap[ustr]
+
+			if j == len(unitstr):
+				num.magnitude *= multiplier ** power * prefixmult
+			else:
+				num.magnitude *= multiplier * prefixmult
+
+			for key in unitdict:
+				if j == len(unitstr):
+					num.base[key] += unitdict[key] * power
+				else:
+					num.base[key] += unitdict[key]
+
+			ustr = prefix + ustr
+			if ustr in num.units:
+				if j == len(unitstr):
+					num.units[ustr] += power
+				else:
+					num.units[ustr] += 1
+			else:
+				if j == len(unitstr):
+					num.units[ustr] = power
+				else:
+					num.units[ustr] = 1
+
+			prefix = ""
+			prefixmult = 1
+			triedprefix = None
+		else:
+			if triedprefix is None:
+				raise ValueError("unknown unit: " + unitstr[i:])
+
+		i = j

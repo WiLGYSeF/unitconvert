@@ -3,10 +3,12 @@ from enum import Enum
 class Token:
 	tokentype = None
 	lexeme = ""
+	character = -1
 
-	def __init__(self, tokentype, lexeme=""):
+	def __init__(self, tokentype, lexeme="", character=-1):
 		self.tokentype = tokentype
 		self.lexeme = lexeme
+		self.character = character
 
 	def __eq__(self, o):
 		if isinstance(o, Token):

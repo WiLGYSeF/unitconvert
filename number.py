@@ -1,5 +1,5 @@
+import parser
 import units
-from parser import Parser
 
 class Number:
 	magnitude = 0
@@ -21,7 +21,10 @@ class Number:
 		if num is None:
 			return
 
-		r = Parser(self, num)
+		r = parser.parse(self, num)
+		self.magnitude = r.magnitude
+		self.base = r.base
+		self.units = r.units
 
 	def __add__(self, o):
 		if not isinstance(o, Number):
