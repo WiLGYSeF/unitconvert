@@ -119,7 +119,7 @@ class Number:
 		n.units = self.units.copy()
 		return n
 
-	def string(self, converts=""):
+	def string(self, converts="", space=False, caret=False):
 		order = ["A", "kg", "m", "s", "K", "mol", "cd"]
 		s = ""
 
@@ -136,7 +136,11 @@ class Number:
 				else:
 					converts += key
 					if c.units[key] != 1:
+						if caret:
+							converts += "^"
 						converts += c.units[key]
+					if space:
+						converts += " "
 
 			n.magnitude /= c.magnitude
 			for key in c.base:
@@ -146,8 +150,14 @@ class Number:
 			if n.base[key] != 0:
 				s += key
 				if n.base[key] != 1:
+					if caret:
+						s += "^"
 					s += str(n.base[key])
-		return str(n.magnitude) + " " + converts + s
+				if space:
+					s += " "
+
+		units = converts + s
+		return str(n.magnitude) + " " + units.strip()
 
 	def __str__(self):
 		return self.string()
