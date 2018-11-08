@@ -111,7 +111,7 @@ def _float(lex):
 	errmsg = "expected number"
 	return None
 
-def unitParse( num, unitstr, power):
+def unitParse(num, unitstr, power):
 	prefix = ""
 	prefixmult = 1
 	i = 0
@@ -136,6 +136,7 @@ def unitParse( num, unitstr, power):
 		while i <= j and unitstr[i:j] not in units.unitmap:
 			j -= 1
 
+		#if unit found
 		if i <= j:
 			ustr = unitstr[i:j]
 			multiplier, unitdict = units.unitmap[ustr]
