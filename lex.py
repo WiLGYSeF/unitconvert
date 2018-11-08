@@ -60,12 +60,11 @@ class Lex:
 				return Token(TokenType.PERIOD, "", self.stream.tell())
 			if ch == ",":
 				return Token(TokenType.COMMA)
-			if ch == "E" or ch == "e":
-				if self.stream.peek().isalpha():
-					self.stream.unget()
-				else:
-					return Token(TokenType.ENOT, ch, self.stream.tell())
 			if ch.isalpha():
+				if ch == "E" or ch == "e":
+					if not self.stream.peek().isalpha():
+						return Token(TokenType.ENOT, ch, self.stream.tell())
+
 				s = ch
 				while True:
 					ch = self.stream.get()
