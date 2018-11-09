@@ -6,7 +6,7 @@ class Number:
 	base = {}
 	units = {}
 
-	def __init__(self, num=None):
+	def __init__(self, num=None, prsr=None):
 		self.base = {
 			"kg": 0,
 			"m": 0,
@@ -21,7 +21,10 @@ class Number:
 		if num is None:
 			return
 
-		r = parser.parse(self, num)
+		if prsr is None:
+			prsr = parser.Parser()
+
+		r = prsr.parse(self, num)
 		self.magnitude = r.magnitude
 		self.base = r.base
 		self.units = r.units
