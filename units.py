@@ -45,6 +45,28 @@ unitmap = {
 	"°C": (1, {"K": 1})
 }
 
+# https://en.wikipedia.org/wiki/United_States_customary_units
+
+customaryunitmap = {
+	"in": (0.0254, {"m": 1}),
+	"ft": (0.3048, {"m": 1}),
+	"yd": (0.9144, {"m": 1}),
+	"mi": (1609.344, {"m": 1}),
+
+	"li": (0.201168, {"m": 1}),
+	"rd": (5.029, {"m": 1}),
+	"ch": (20.116, {"m": 1}),
+	"fur": (201.168, {"m": 1}),
+	"lea": (4828, {"m": 1}),
+	"ftm": (1.8288, {"m": 1}),
+	"cb": (219.456, {"m": 1}),
+	"nmi": (1852, {"m": 1}),
+
+	"acre": (4046.873, {"m": 2}),
+	"section": (2589998, {"m": 2}),
+	"twp": (93239930, {"m": 2})
+}
+
 #rpn stack, front is 0
 temperaturemap = {
 	"°K": [],
