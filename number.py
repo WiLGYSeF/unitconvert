@@ -128,14 +128,25 @@ class Number:
 
 		n = self
 
-		if converts != "":
+		#convert if converts option is not None
+		if converts is not None:
+			#if blank, automatically use units when Number was initialized
+			if converts == "":
+				for key in n.units:
+					converts += key
+					if n.units[key] != 0:
+						converts += str(n.units[key])
+					converts += " "
+
 			c = Number("1 " + converts)
 			n = self.copy()
 
+			#check if temperature needs to be converted (special case)
 			for key in c.units:
 				if key in units.temperaturemap:
 					if key != "K":
 						tempconvert = True
+						#can only handle single-unit temperature conversions
 						if len(c.units) > 1 or c.base["K"] != n.base["K"]:
 							raise TypeError("cannot convert complex temperature units")
 
@@ -155,7 +166,7 @@ class Number:
 					if space:
 						converts += " "
 
-			#take difference from converts units
+			#take difference from convert units and magnitude
 			if not tempconvert:
 				n.magnitude /= c.magnitude
 			for key in c.base:
@@ -173,8 +184,12 @@ class Number:
 					s += " "
 
 		magnitudestr = str(n.magnitude)
-		unitstr = converts + s
+		if converts is None:
+			unitstr = s
+		else:
+			unitstr = converts + s
 
+		#convert number to scientific notation
 		if scientific:
 			mag = n.magnitude
 			neg = mag < 0
@@ -183,6 +198,7 @@ class Number:
 			if neg:
 				mag = -mag
 
+			#move decimal until 1 <= abs(number) < 10
 			if mag >= 10:
 				while mag >= 10:
 					mag /= 10
