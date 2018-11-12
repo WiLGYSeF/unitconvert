@@ -61,8 +61,8 @@ class Lex:
 			if ch == ".":
 				return Token(TokenType.PERIOD, "", self.stream.tell())
 			if ch == ",":
-				return Token(TokenType.COMMA)
-			if ch.isalpha() or ch in unitsymbols:
+				return Token(TokenType.COMMA, "", self.stream.tell())
+			if self.isUnitChar(ch):
 				if ch == "E" or ch == "e":
 					if not self.stream.peek().isalpha():
 						return Token(TokenType.ENOT, ch, self.stream.tell())
@@ -72,7 +72,7 @@ class Lex:
 					ch = self.stream.get()
 					if ch is None:
 						break
-					if ch.isalpha():
+					if self.isUnitChar(ch):
 						s += ch
 					else:
 						self.stream.unget()
@@ -82,3 +82,7 @@ class Lex:
 
 			return Token(TokenType.ERR, ch, self.stream.tell())
 		return Token(TokenType.DONE, "", self.stream.tell())
+
+	@staticmethod
+	def isUnitChar(ch):
+		return ch.isalpha() or ch in unitsymbols
