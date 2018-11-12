@@ -20,13 +20,13 @@ unitmap = {
 	"Hz":		(1,				"hertz",		{"s": -1}),
 	"lx":		(1,				"lux",			{"cd": 1, "m": -2}),
 	"lm":		(1,				"lumen",		{"cd": 1}),
-	"Wb":		(1,				"weber",		{"V": 1, "s": 1}),
-	"T":		(1,				"tesla",		{"V": 1, "s": 1, "m": -2}),
-	"W":		(1,				"watt",			{"J": 1, "s": -1}),
-	"Pa":		(1,				"pascal",		{"N": 1, "m": -2}),
+	"Wb":		(1,				"weber",		{"kg": 1, "m": 2, "s": -2, "A": -1}),
+	"T":		(1,				"tesla",		{"kg": 1, "s": -2, "A": -1}),
+	"W":		(1,				"watt",			{"kg": 1, "m": 2, "s": -3}),
+	"Pa":		(1,				"pascal",		{"kg": 1, "m": -1, "s": -2}),
 	"Bq":		(1,				"becquerel",	{"s": -1}),
-	"Gy":		(1,				"gray",			{"J": 1, "kg": -1}),
-	"Sv":		(1,				"sievert",		{"J": 1, "kg": -1}),
+	"Gy":		(1,				"gray",			{"m": 2, "s": -2}),
+	"Sv":		(1,				"sievert",		{"m": 2, "s": -2}),
 	"kat":		(1,				"katal",		{"mol": 1, "s": -1}),
 
 	"min":		(60,			"minute",		{"s": 1}),
@@ -37,11 +37,11 @@ unitmap = {
 	"L":		(0.001,			"litre",		{"m": 3}),
 	"t":		(1000,			"ton",			{"kg": 1}),
 
-	"bar":		(100000,		"bar",			{"N": 1, "m": -2}),
+	"bar":		(100000,		"bar",			{"kg": 1, "m": -1, "s": -2}),
 	"Ci":		(3.7 * 10**10,	"curie",		{"s": -1}),
 	"R":		(2.58 * 10**-4,	"roentgen",		{"A": 1, "s": 1, "kg": -1}),
-	"rd":		(0.01,			"rad",			{"J": 1, "kg": -1}),
-	"rem":		(0.01,			"rem",			{"J": 1, "kg": -1}),
+	"rd":		(0.01,			"rad",			{"m": 2, "s": -2}),
+	"rem":		(0.01,			"rem",			{"m": 2, "s": -2}),
 
 	#handled elsewhere
 	"°F":		(1,				"fahrenheit",	{"K": 1}),
@@ -69,19 +69,19 @@ customaryunitmap = {
 	"section":	(2589998,		"section",		{"m": 2}),
 	"twp":		(93239930,		"township",		{"m": 2}),
 
-	"Btu":		(1055,			"British thermal unit", {"J": 1}),
-	"cal":		(4.184,			"calorie",		{"J": 1}),
-	"kcal":		(4184,			"kilocalorie",	{"J": 1}),
-	"ft-lbf":	(1.356,			"foot-pound",	{"J": 1}),
-	"Wh":		(3600,			"watt-hour",	{"J": 1}),
+	"Btu":		(1055,			"British thermal unit", {"kg": 1, "m": 2, "s": -2}),
+	"cal":		(4.184,			"calorie",		{"kg": 1, "m": 2, "s": -2}),
+	"kcal":		(4184,			"kilocalorie",	{"kg": 1, "m": 2, "s": -2}),
+	"ft-lbf":	(1.356,			"foot-pound",	{"kg": 1, "m": 2, "s": -2}),
+	"Wh":		(3600,			"watt-hour",	{"kg": 1, "m": 2, "s": -2}),
 
-	"hp":		(745.7,			"horsepower",	{"J": 1, "s": -1}),
+	"hp":		(745.7,			"horsepower",	{"kg": 1, "m": 2, "s": -3}),
 
 	"slug":		(14.5939,		"slug",			{"kg": 1}),
 
-	"psi":		(6894.76,		"pound-per-square-inch", {"N": 1, "m": -2}),
-	"psf":		(47.88,			"pound-per-square-foot", {"N": 1, "m": -2}),
-	"atm":		(101.325,		"atmosphere",	{"N": 1, "m": -2})
+	"psi":		(6894.76,		"pound-per-square-inch", {"kg": 1, "m": -1, "s": -2}),
+	"psf":		(47.88,			"pound-per-square-foot", {"kg": 1, "m": -1, "s": -2}),
+	"atm":		(101.325,		"atmosphere",	{"kg": 1, "m": -1, "s": -2})
 }
 
 avoirdupoismap = {
