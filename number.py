@@ -124,7 +124,7 @@ class Number:
 		n.units = self.units.copy()
 		return n
 
-	def string(self, converts="", space=False, caret=False):
+	def string(self, converts="", space=False, caret=False, scientific=False, printunits=True):
 		order = ["kg", "m", "s", "K", "A", "mol", "cd"]
 		s = ""
 		tempconvert = False
@@ -175,8 +175,36 @@ class Number:
 				if space:
 					s += " "
 
+		magnitudestr = str(n.magnitude)
 		unitstr = converts + s
-		return str(n.magnitude) + " " + unitstr.strip()
+
+		if scientific:
+			mag = n.magnitude
+			neg = mag < 0
+			power = 0
+
+			if neg:
+				mag = -mag
+
+			if mag >= 10:
+				while mag >= 10:
+					mag /= 10
+					power += 1
+			elif mag < 1:
+				while mag < 1:
+					mag *= 10
+					power -= 1
+
+			if neg:
+				magnitudestr = "-"
+			else:
+				magnitudestr = ""
+			magnitudestr += str(mag) + "E" + str(power)
+
+		if printunits:
+			magnitudestr += " " + unitstr.strip()
+
+		return magnitudestr
 
 	def __str__(self):
 		return self.string()
