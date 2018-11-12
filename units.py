@@ -1,5 +1,7 @@
 ﻿# http://www.us-metric.org/detailed-list-of-metric-system-units-symbols-and-prefixes/
 
+metricbase = ["kg", "m", "s", "K", "A", "mol", "cd"]
+
 unitmap = {
 	"g":		(0.001,			"gram",			{"kg": 1}),
 	"m":		(1,				"meter",		{"m": 1}),
@@ -149,3 +151,19 @@ prefixnamemap = {
 	"z": "zepto",
 	"y": "yocto"
 }
+
+def sanitycheck(unitmap):
+	for key in unitmap:
+		magnitude, name, units = unitmap[key]
+		if magnitude < 0:
+			raise ValueError("sanitycheck: magnitude less than zero: " + key)
+		if name is None or len(name) == 0:
+			raise ValueError("sanitycheck: name blank: " + key)
+		for uk in units:
+			if uk not in metricbase:
+				raise ValueError("sanitycheck: unit is not si base: " + key + " (" + uk + ")")
+
+def sanitycheck_defaults():
+	maps = [unitmap, customaryunitmap, avoirdupoismap, troymap]
+	for m in maps:
+		sanitycheck(m)
