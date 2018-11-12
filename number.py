@@ -139,7 +139,7 @@ class Number:
 						if len(c.units) > 1 or c.base["K"] != n.base["K"]:
 							raise TypeError("cannot convert complex temperature units")
 
-						parser.temperature_rpn(n, "_°K_to_" + key)
+						parser.temperature_rpn(n, "_K_to_" + key)
 
 			#subtract unit bases from base units and create convert string
 			converts = ""

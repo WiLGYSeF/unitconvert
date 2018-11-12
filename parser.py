@@ -202,7 +202,7 @@ class Parser:
 			#if unit found
 			if i <= j:
 				ustr = unitstr[i:j]
-				multiplier, unitdict = units.unitmap[ustr]
+				multiplier, _, unitdict = units.unitmap[ustr]
 
 				if ustr in units.temperaturemap:
 					temperature_rpn(num, ustr)
