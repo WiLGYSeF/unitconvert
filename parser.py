@@ -70,6 +70,7 @@ class Parser:
 			n = self._float()
 			if n is None:
 				if token != TokenType.DONE and token != TokenType.SCONST:
+					self.lex.ungetToken(token)
 					self.errmsg = "expected number or unit"
 					return None
 			else:
