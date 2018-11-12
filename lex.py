@@ -1,5 +1,7 @@
 from token import Token, TokenType
 
+unitsymbols = ["°"]
+
 class Lex:
 	token_putback = None
 	stream = None
@@ -60,7 +62,7 @@ class Lex:
 				return Token(TokenType.PERIOD, "", self.stream.tell())
 			if ch == ",":
 				return Token(TokenType.COMMA)
-			if ch.isalpha():
+			if ch.isalpha() or ch in unitsymbols:
 				if ch == "E" or ch == "e":
 					if not self.stream.peek().isalpha():
 						return Token(TokenType.ENOT, ch, self.stream.tell())

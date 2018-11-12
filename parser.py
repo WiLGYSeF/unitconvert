@@ -22,6 +22,14 @@ class Parser:
 
 		if not r:
 			raise ValueError("invalid number (char " + str(self.lex.peekToken().character) + ", " + self.errmsg + "): " + numstr)
+
+		tcount = 0
+		for key in num.units:
+			if key in units.temperaturemap:
+				tcount += 1
+		if tcount > 1:
+			raise ValueError("too many temperature units: " + numstr)
+
 		return r
 
 	# <number> = <float> [ENOT] {SCONST [CARET] [<float>]}
@@ -197,6 +205,9 @@ class Parser:
 				ustr = unitstr[i:j]
 				multiplier, unitdict = units.unitmap[ustr]
 
+				if ustr in units.temperaturemap:
+					temperature_rpn(num, ustr)
+
 				#power only applies to last unit if unitstr contains multiple units
 
 				if j == len(unitstr):
@@ -230,3 +241,30 @@ class Parser:
 					raise ValueError("unknown unit: " + unitstr[i:])
 
 			i = j
+
+def temperature_rpn(num, u):
+	ustack = units.temperaturemap[u]
+	curstack = []
+
+	for e in ustack:
+		if isinstance(e, str):
+			if len(curstack) == 0:
+				raise ValueError("unit conversion stack is empty for '" + u + "'")
+
+			if e == "+":
+				num.magnitude += curstack.pop()
+			elif e == "-":
+				num.magnitude -= curstack.pop()
+			elif e == "*":
+				num.magnitude *= curstack.pop()
+			elif e == "/":
+				num.magnitude /= curstack.pop()
+			elif e == "^":
+				num.magnitude **= curstack.pop()
+			else:
+				raise ValueError("invalid unit conversion operation for '" + u + "': " + e)
+		else:
+			curstack.append(e)
+
+	if len(curstack) != 0:
+		raise ValueError("temperature stack is not empty")

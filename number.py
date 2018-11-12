@@ -125,6 +125,7 @@ class Number:
 	def string(self, converts="", space=False, caret=False):
 		order = ["kg", "m", "s", "K", "A", "mol", "cd"]
 		s = ""
+		tempconvert = False
 
 		n = self
 
@@ -132,6 +133,16 @@ class Number:
 			c = Number("1 " + converts)
 			n = self.copy()
 
+			for key in c.units:
+				if key in units.temperaturemap:
+					if key != "K":
+						tempconvert = True
+						if len(c.units) > 1 or c.base["K"] != n.base["K"]:
+							raise TypeError("cannot convert complex temperature units")
+
+						parser.temperature_rpn(n, "_°K_to_" + key)
+
+			#subtract unit bases from base units and create convert string
 			converts = ""
 			for key in c.units:
 				if key in c.base:
@@ -146,10 +157,12 @@ class Number:
 						converts += " "
 
 			#take difference from converts units
-			n.magnitude /= c.magnitude
+			if not tempconvert:
+				n.magnitude /= c.magnitude
 			for key in c.base:
 				n.base[key] -= c.base[key]
 
+		#create unit string
 		for key in order:
 			if n.base[key] != 0:
 				s += key
@@ -160,8 +173,8 @@ class Number:
 				if space:
 					s += " "
 
-		units = converts + s
-		return str(n.magnitude) + " " + units.strip()
+		unitstr = converts + s
+		return str(n.magnitude) + " " + unitstr.strip()
 
 	def __str__(self):
 		return self.string()
