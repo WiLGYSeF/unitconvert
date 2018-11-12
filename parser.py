@@ -180,21 +180,22 @@ class Parser:
 		prefix = ""
 		prefixmult = 1
 		i = 0
-		triedprefix = None
+		triedprefixidx = -1
 
 		while i < len(unitstr):
 			#triedprefix: if parsing with a prefix fails, try again without a prefix
-			if triedprefix is None:
+			if triedprefixidx == -1:
 				#check if the unit has a prefix
 				if i != len(unitstr) - 1 and unitstr[i] in units.prefixmap:
 					prefix = unitstr[i]
 					prefixmult = units.prefixmap[prefix]
-					triedprefix = i
+					triedprefixidx = i
 					i += 1
 			else:
+				prefix = ""
 				prefixmult = 1
-				i = triedprefix
-				triedprefix = None
+				i = triedprefixidx
+				triedprefixidx = -1
 
 			#find longest matching unit in table
 			j = len(unitstr)
@@ -236,9 +237,9 @@ class Parser:
 
 				prefix = ""
 				prefixmult = 1
-				triedprefix = None
+				triedprefixidx = -1
 			else:
-				if triedprefix is None:
+				if triedprefixidx == -1:
 					raise ValueError("unknown unit: " + unitstr[i:])
 
 			i = j
