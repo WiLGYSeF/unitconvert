@@ -77,7 +77,7 @@ customaryunitmap = {
 }
 
 avoirdupoismap = {
-	"gr":		(64798.91,		"grain",		{"kg": 1}),
+	"gr":		(64.7989*10**-5,"grain",		{"kg": 1}),
 	"dr":		(0.001771845,	"dram",			{"kg": 1}),
 	"oz":		(0.028349523,	"ounce",		{"kg": 1}),
 	"lb":		(0.45359237,	"pound",		{"kg": 1}),
@@ -86,7 +86,7 @@ avoirdupoismap = {
 }
 
 troymap = {
-	"gr":		(64798.91,		"grain",		{"kg": 1}),
+	"gr":		(64.7989*10**-5,"grain",		{"kg": 1}),
 	"dwt":		(0.001555173,	"pennyweight",	{"kg": 1})
 }
 
