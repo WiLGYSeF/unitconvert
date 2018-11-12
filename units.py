@@ -71,9 +71,15 @@ customaryunitmap = {
 	"cal":		(4.184,			"calorie",		{"J": 1}),
 	"kcal":		(4184,			"kilocalorie",	{"J": 1}),
 	"ft-lbf":	(1.356,			"foot-pound",	{"J": 1}),
+	"Wh":		(3600,			"watt-hour",	{"J": 1}),
+
 	"hp":		(745.7,			"horsepower",	{"J": 1, "s": -1}),
+
 	"slug":		(14.5939,		"slug",			{"kg": 1}),
-	"psi":		(6894.76,		"pound-per-square-inch", {"N": 1, "m": -2})
+
+	"psi":		(6894.76,		"pound-per-square-inch", {"N": 1, "m": -2}),
+	"psf":		(47.88,			"pound-per-square-foot", {"N": 1, "m": -2}),
+	"atm":		(101.325,		"atmosphere",	{"N": 1, "m": -2})
 }
 
 avoirdupoismap = {
