@@ -2,11 +2,8 @@ import parser
 import units
 
 class Number:
-	magnitude = 0
-	base = {}
-	units = {}
-
 	def __init__(self, num=None, prsr=None):
+		self.magnitude = 0
 		self.base = {
 			"kg": 0,
 			"m": 0,

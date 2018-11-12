@@ -5,13 +5,10 @@ from token import Token, TokenType
 import units
 
 class Parser:
-	decimaltype = TokenType.PERIOD
-
-	errmsg = ""
-	lex = None
-
 	def __init__(self):
+		self.decimaltype = TokenType.PERIOD
 		self.errmsg = ""
+		self.lex = None
 
 	def parse(self, num, numstr):
 		if numstr is None:

@@ -3,11 +3,9 @@ from token import Token, TokenType
 unitsymbols = ["°"]
 
 class Lex:
-	token_putback = None
-	stream = None
-
 	def __init__(self, stream):
 		self.stream = stream
+		self.token_putback = None
 
 	def getToken(self):
 		if self.token_putback is not None:

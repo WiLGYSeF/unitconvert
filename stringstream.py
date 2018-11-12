@@ -1,9 +1,7 @@
 class StringStream:
-	string = None
-	offset = 0
-
 	def __init__(self, s):
 		self.string = s
+		self.offset = 0
 
 	def read(self, length=-1):
 		if self.offset == len(self.string):
