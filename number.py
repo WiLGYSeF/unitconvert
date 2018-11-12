@@ -50,11 +50,12 @@ class Number:
 		return n
 
 	def __mul__(self, o):
+		n = self.copy()
+
 		if not isinstance(o, Number):
 			n.magnitude *= o
 			return n
 
-		n = self.copy()
 		for key in n.base:
 			n.base[key] += o.base[key]
 		n.units.update(o.units)
@@ -63,11 +64,12 @@ class Number:
 		return n
 
 	def __truediv__(self, o):
+		n = self.copy()
+
 		if not isinstance(o, Number):
 			n.magnitude /= o
 			return n
 
-		n = self.copy()
 		for key in n.base:
 			n.base[key] -= o.base[key]
 		n.units.update(o.units)
@@ -80,38 +82,38 @@ class Number:
 			raise TypeError("must be Number")
 		if self.base != o.base:
 			raise TypeError("units do not match")
-		return n.magnitude < o.magnitude
+		return self.magnitude < o.magnitude
 
 	def __le__(self, o):
 		if not isinstance(o, Number):
 			raise TypeError("must be Number")
 		if self.base != o.base:
 			raise TypeError("units do not match")
-		return n.magnitude <= o.magnitude
+		return self.magnitude <= o.magnitude
 
 	def __eq__(self, o):
 		if not isinstance(o, Number):
 			raise TypeError("must be Number")
-		return n.magnitude == o.magnitude and n.base == o.base
+		return self.magnitude == o.magnitude and self.base == o.base
 
 	def __neq__(self, o):
 		if not isinstance(o, Number):
 			raise TypeError("must be Number")
-		return n.magnitude != o.magnitude or n.base != o.base
+		return self.magnitude != o.magnitude or self.base != o.base
 
 	def __gt__(self, o):
 		if not isinstance(o, Number):
 			raise TypeError("must be Number")
 		if self.base != o.base:
 			raise TypeError("units do not match")
-		return n.magnitude > o.magnitude
+		return self.magnitude > o.magnitude
 
 	def __ge__(self, o):
 		if not isinstance(o, Number):
 			raise TypeError("must be Number")
 		if self.base != o.base:
 			raise TypeError("units do not match")
-		return n.magnitude >= o.magnitude
+		return self.magnitude >= o.magnitude
 
 	def copy(self):
 		n = Number()
