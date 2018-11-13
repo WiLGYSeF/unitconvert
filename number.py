@@ -27,52 +27,68 @@ class Number:
 		self.units = r.units
 
 	def __add__(self, o):
+		return self.copy().add(o)
+
+	def add(self, o):
 		if not isinstance(o, Number):
 			raise TypeError("must be Number")
 		if self.base != o.base:
 			raise TypeError("units do not match")
 
-		n = self.copy()
-		n.magnitude += o.magnitude
-		return n
+		self.magnitude += o.magnitude
+		return self
 
 	def __sub__(self, o):
+		return self.copy().sub(o)
+
+	def sub(self, o):
 		if not isinstance(o, Number):
 			raise TypeError("must be Number")
 		if self.base != o.base:
 			raise TypeError("units do not match")
 
-		n = self.copy()
-		n.magnitude -= o.magnitude
-		return n
+		self.magnitude -= o.magnitude
+		return self
 
 	def __mul__(self, o):
-		n = self.copy()
+		return self.copy().mul(o)
 
+	def mul(self, o):
 		if not isinstance(o, Number):
-			n.magnitude *= o
-			return n
+			self.magnitude *= o
+			return self
 
-		for key in n.base:
-			n.base[key] += o.base[key]
-		n.units.update(o.units)
+		for key in self.base:
+			self.base[key] += o.base[key]
+		self.units.update(o.units)
 
-		n.magnitude *= o.magnitude
-		return n
+		self.magnitude *= o.magnitude
+		return self
 
 	def __truediv__(self, o):
-		n = self.copy()
+		return self.copy.div(o)
 
+	def div(self, o):
 		if not isinstance(o, Number):
-			n.magnitude /= o
-			return n
+			self.magnitude /= o
+			return self
 
-		for key in n.base:
-			n.base[key] -= o.base[key]
-		n.units.update(o.units)
+		for key in self.base:
+			self.base[key] -= o.base[key]
+		self.units.update(o.units)
 
-		n.magnitude /= o.magnitude
-		return n
+		self.magnitude /= o.magnitude
+		return self
+
+	def pow(self, o):
+		if isinstance(o, Number):
+			raise TypeError("expected scalar unit")
+
+		for key in self.base:
+			self.base[key] *= o
+
+		self.magnitude **= o
+		return self
 
 	def __lt__(self, o):
 		if not isinstance(o, Number):
