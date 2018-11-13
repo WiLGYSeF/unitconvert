@@ -29,10 +29,6 @@ unitmap = {
 	"Sv":		(1,				"sievert",		{"m": 2, "s": -2}),
 	"kat":		(1,				"katal",		{"mol": 1, "s": -1}),
 
-	"min":		(60,			"minute",		{"s": 1}),
-	"h":		(3600,			"hour",			{"s": 1}),
-	"d":		(86400,			"day",			{"s": 1}),
-
 	"ha":		(10000,			"hectare",		{"m": 2}),
 	"L":		(0.001,			"litre",		{"m": 3}),
 	"t":		(1000,			"ton",			{"kg": 1}),
@@ -41,7 +37,14 @@ unitmap = {
 	"Ci":		(3.7 * 10**10,	"curie",		{"s": -1}),
 	"R":		(2.58 * 10**-4,	"roentgen",		{"A": 1, "s": 1, "kg": -1}),
 	"rd":		(0.01,			"rad",			{"m": 2, "s": -2}),
-	"rem":		(0.01,			"rem",			{"m": 2, "s": -2}),
+	"rem":		(0.01,			"rem",			{"m": 2, "s": -2})
+}
+
+metric_customarymap = {
+	"min":		(60,			"minute",		{"s": 1}),
+	"h":		(3600,			"hour",			{"s": 1}),
+	"hr":		(3600,			"hour",			{"s": 1}),
+	"d":		(86400,			"day",			{"s": 1}),
 
 	#handled elsewhere
 	"°F":		(1,				"fahrenheit",	{"K": 1}),

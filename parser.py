@@ -7,6 +7,8 @@ import units
 class Parser:
 	def __init__(self):
 		self.decimaltype = TokenType.PERIOD
+		self.system = "metric"
+
 		self.errmsg = ""
 		self.lex = None
 
@@ -172,8 +174,7 @@ class Parser:
 		self.lex.ungetToken(token)
 		return value
 
-	@staticmethod
-	def unitParse(num, unitstr, power):
+	def unitParse(self, num, unitstr, power):
 		prefix = ""
 		prefixmult = 1
 		i = 0
@@ -195,14 +196,17 @@ class Parser:
 				triedprefixidx = -1
 
 			#find longest matching unit in table
+			uresult = None
 			j = len(unitstr)
-			while i <= j and unitstr[i:j] not in units.unitmap:
+			while i <= j:
+				uresult = self.getUnit(unitstr[i:j])
+				if uresult is not None:
+					break
 				j -= 1
 
-			#if unit found
-			if i <= j:
+			if uresult is not None:
 				ustr = unitstr[i:j]
-				multiplier, _, unitdict = units.unitmap[ustr]
+				multiplier, _, unitdict = uresult
 
 				if ustr in units.temperaturemap:
 					temperature_rpn(num, ustr)
@@ -240,6 +244,23 @@ class Parser:
 					raise UnitParseError("unknown unit: " + unitstr[i:], {"unit": unitstr[i:]})
 
 			i = j
+
+	def getUnit(self, u):
+		if self.system == "metric":
+			if u in units.unitmap:
+				return units.unitmap[u]
+			if u in units.metric_customarymap:
+				return units.metric_customarymap[u]
+			return None
+		if self.system == "customary":
+			if u in units.customaryunitmap:
+				return units.customaryunitmap[u]
+			if u in units.metric_customarymap:
+				return units.metric_customarymap[u]
+			return None
+
+		raise ValueError("unknown measurement system: " + self.system)
+
 
 def temperature_rpn(num, u):
 	ustack = units.temperaturemap[u]
