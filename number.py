@@ -1,3 +1,4 @@
+import math
 import parser
 import units
 
@@ -140,7 +141,7 @@ class Number:
 		n.units = self.units.copy()
 		return n
 
-	def string(self, converts="", space=False, caret=False, scientific=False, printunits=True):
+	def string(self, converts="", space=False, caret=False, scientific=False, printunits=True, sigfig=-1):
 		order = ["kg", "m", "s", "K", "A", "mol", "cd"]
 		s = ""
 		tempconvert = False
@@ -154,7 +155,7 @@ class Number:
 				for key in n.units:
 					converts += key
 					if n.units[key] != 0:
-						converts += self.floatToStr(n.units[key])
+						converts += self.unitFloatToStr(n.units[key])
 					converts += " "
 
 			c = Number("1 " + converts)
@@ -198,7 +199,7 @@ class Number:
 				if n.base[key] != 1:
 					if caret:
 						s += "^"
-					s += self.floatToStr(n.base[key])
+					s += self.unitFloatToStr(n.base[key])
 				if space:
 					s += " "
 
@@ -208,30 +209,7 @@ class Number:
 		else:
 			unitstr = converts + s
 
-		#convert number to scientific notation
-		if scientific:
-			mag = n.magnitude
-			neg = mag < 0
-			power = 0
-
-			if neg:
-				mag = -mag
-
-			#move decimal until 1 <= abs(number) < 10
-			if mag >= 10:
-				while mag >= 10:
-					mag /= 10
-					power += 1
-			elif mag < 1:
-				while mag < 1:
-					mag *= 10
-					power -= 1
-
-			if neg:
-				magnitudestr = "-"
-			else:
-				magnitudestr = ""
-			magnitudestr += str(mag) + "E" + str(power)
+		magnitudestr = self.floatToStr(n.magnitude, sigfig, scientific=scientific)
 
 		if printunits:
 			magnitudestr += " " + unitstr.strip()
@@ -242,5 +220,53 @@ class Number:
 		return self.string()
 
 	@staticmethod
-	def floatToStr(f):
+	def floatToStr(f, sigfig, scientific=False):
+		fstr = str(f)
+
+		if sigfig >= 0:
+			# https://stackoverflow.com/a/3411435
+			round_to_n = lambda x, n: round(x, -int(math.floor(math.log10(x))) + (n - 1))
+			f = round_to_n(f, sigfig)
+			fstr = str(f)
+
+			hasdot = "." in fstr
+
+			#fix up digits
+			if (hasdot and len(fstr) - 1 != sigfig) or (not hasdot and len(fstr) != sigfig):
+				if not hasdot:
+					#add more zeros to fit sigfig
+					fstr += "." + ("0" * (sigfig - len(fstr)))
+				else:
+					if len(fstr) - 1 > sigfig:
+						#remove extra trailing ".0"
+						fstr = fstr[:fstr.find(".")]
+					else:
+						#add more zeros to fit sigfig
+						fstr += "0" * (sigfig - (len(fstr) - 1))
+
+		if scientific:
+			neg = f < 0
+			power = 0
+
+			if neg:
+				f = -f
+
+			#move decimal until 1 <= abs(number) < 10
+			if f >= 10:
+				while f >= 10:
+					f /= 10
+					power += 1
+			elif f < 1:
+				while f < 1:
+					f *= 10
+					power -= 1
+			fstr = str(f)
+
+			if neg:
+				return "-" + fstr + "E" + str(power)
+			return fstr + "E" + str(power)
+		return fstr
+
+	@staticmethod
+	def unitFloatToStr(f):
 		return format(f, ".15f").rstrip("0").rstrip(".")
