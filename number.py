@@ -151,7 +151,7 @@ class Number:
 				for key in n.units:
 					converts += key
 					if n.units[key] != 0:
-						converts += str(n.units[key])
+						converts += self.floatToStr(n.units[key])
 					converts += " "
 
 			c = Number("1 " + converts)
@@ -195,7 +195,7 @@ class Number:
 				if n.base[key] != 1:
 					if caret:
 						s += "^"
-					s += str(n.base[key])
+					s += self.floatToStr(n.base[key])
 				if space:
 					s += " "
 
@@ -237,3 +237,7 @@ class Number:
 
 	def __str__(self):
 		return self.string()
+
+	@staticmethod
+	def floatToStr(f):
+		return format(f, ".15f").rstrip("0").rstrip(".")
