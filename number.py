@@ -141,7 +141,10 @@ class Number:
 		n.units = self.units.copy()
 		return n
 
-	def string(self, converts="", space=False, caret=False, scientific=False, printunits=True, sigfig=-1):
+	def string(self, converts="", space=False, caret=False, scientific=False, printunits=True, sigfig=-1, roundnum=None):
+		if sigfig >= 0 and roundnum is not None:
+			raise ValueError("cannot round and express significant figures")
+
 		order = ["kg", "m", "s", "K", "A", "mol", "cd"]
 		s = ""
 		tempconvert = False
@@ -208,6 +211,9 @@ class Number:
 			unitstr = s
 		else:
 			unitstr = converts + s
+
+		if roundnum is not None:
+			n.magnitude = round(n.magnitude, roundnum)
 
 		magnitudestr = self.floatToStr(n.magnitude, sigfig, scientific=scientific)
 
