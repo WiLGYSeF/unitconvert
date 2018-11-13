@@ -67,7 +67,7 @@ class Number:
 		return self
 
 	def __truediv__(self, o):
-		return self.copy.div(o)
+		return self.copy().div(o)
 
 	def div(self, o):
 		if not isinstance(o, Number):
