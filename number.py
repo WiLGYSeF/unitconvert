@@ -80,6 +80,9 @@ class Number:
 		self.magnitude /= o.magnitude
 		return self
 
+	def pow_copy(self, o):
+		return self.copy().pow(o)
+
 	def pow(self, o):
 		if isinstance(o, Number):
 			raise TypeError("expected scalar unit")
