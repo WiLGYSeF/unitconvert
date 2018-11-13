@@ -18,14 +18,14 @@ class Parser:
 		r = self._number()
 
 		if not r:
-			raise ValueError("invalid number (char " + str(self.lex.peekToken().character) + ", " + self.errmsg + "): " + numstr)
+			raise NumberParseError("invalid number: " + self.errmsg + " (" + numstr + ")", {"char": self.lex.peekToken().character, "message": self.errmsg, "numstr": numstr})
 
 		tcount = 0
 		for key in num.units:
 			if key in units.temperaturemap:
 				tcount += 1
 		if tcount > 1:
-			raise ValueError("too many temperature units: " + numstr)
+			raise UnitParseError("too many temperature units: " + numstr)
 
 		return r
 
@@ -237,7 +237,7 @@ class Parser:
 				triedprefixidx = -1
 			else:
 				if triedprefixidx == -1:
-					raise ValueError("unknown unit: " + unitstr[i:])
+					raise UnitParseError("unknown unit: " + unitstr[i:], {"unit": unitstr[i:]})
 
 			i = j
 
@@ -248,7 +248,7 @@ def temperature_rpn(num, u):
 	for e in ustack:
 		if isinstance(e, str):
 			if len(curstack) == 0:
-				raise ValueError("unit conversion stack is empty for '" + u + "'")
+				raise UnitParseError("unit conversion stack is empty for '" + u + "'", {"unit": u})
 
 			if e == "+":
 				num.magnitude += curstack.pop()
@@ -261,9 +261,21 @@ def temperature_rpn(num, u):
 			elif e == "^":
 				num.magnitude **= curstack.pop()
 			else:
-				raise ValueError("invalid unit conversion operation for '" + u + "': " + e)
+				raise UnitParseError("invalid unit conversion operation for '" + u + "': " + e, {"unit": u})
 		else:
 			curstack.append(e)
 
 	if len(curstack) != 0:
-		raise ValueError("temperature stack is not empty")
+		raise UnitParseError("temperature stack is not empty", {"unit": u})
+
+class NumberParseError(Exception):
+	def __init__(self, message, status={}):
+		super().__init__(message)
+
+		self.status = status
+
+class UnitParseError(Exception):
+	def __init__(self, message, status={}):
+		super().__init__(message)
+
+		self.status = status
