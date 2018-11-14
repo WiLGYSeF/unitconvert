@@ -5,14 +5,14 @@ from token import Token, TokenType
 import units
 
 class Parser:
-	def __init__(self):
+	def __init__(self, system="metric"):
 		self.decimaltype = TokenType.PERIOD
-		self.system = "metric"
+		self.system = system
 
 		self.errmsg = ""
 		self.lex = None
 
-	def parse(self, num, numstr):
+	def parse(self, numstr):
 		if numstr is None:
 			return
 
@@ -23,7 +23,7 @@ class Parser:
 			raise NumberParseError("invalid number: " + self.errmsg + " (" + numstr + ")", {"char": self.lex.peekToken().character, "message": self.errmsg, "numstr": numstr})
 
 		tcount = 0
-		for key in num.units:
+		for key in r.units:
 			if key in units.temperaturemap:
 				tcount += 1
 		if tcount > 1:

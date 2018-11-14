@@ -22,7 +22,7 @@ class Number:
 		if prsr is None:
 			prsr = parser.Parser()
 
-		r = prsr.parse(self, num)
+		r = prsr.parse(num)
 		self.magnitude = r.magnitude
 		self.base = r.base
 		self.units = r.units
