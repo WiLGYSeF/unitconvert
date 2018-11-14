@@ -2,7 +2,7 @@
 
 metricbase = ["kg", "m", "s", "K", "A", "mol", "cd"]
 
-unitmap = {
+metric_units = {
 	"g":		(0.001,			"gram",			{"kg": 1}),
 	"m":		(1,				"meter",		{"m": 1}),
 	"s":		(1,				"second",		{"s": 1}),
@@ -40,7 +40,7 @@ unitmap = {
 	"rem":		(0.01,			"rem",			{"m": 2, "s": -2})
 }
 
-metric_customarymap = {
+metric_customary_units = {
 	"min":		(60,			"minute",		{"s": 1}),
 	"h":		(3600,			"hour",			{"s": 1}),
 	"hr":		(3600,			"hour",			{"s": 1}),
@@ -53,7 +53,7 @@ metric_customarymap = {
 
 # https://en.wikipedia.org/wiki/United_States_customary_units
 
-customaryunitmap = {
+customary_units = {
 	"in":		(0.0254,		"inch",			{"m": 1}),
 	"ft":		(0.3048,		"foot",			{"m": 1}),
 	"yd":		(0.9144,		"yard",			{"m": 1}),
@@ -87,7 +87,17 @@ customaryunitmap = {
 	"atm":		(101.325,		"atmosphere",	{"kg": 1, "m": -1, "s": -2})
 }
 
-avoirdupoismap = {
+customary_dry_units = {
+
+}
+
+customary_wet_units = {
+
+}
+
+customary_possibleprefix = ["fl", "short", "long", "oz", "lb"]
+
+avoirdupois_units = {
 	"gr":		(64.7989*10**-5,"grain",		{"kg": 1}),
 	"dr":		(0.001771845,	"dram",			{"kg": 1}),
 	"oz":		(0.028349523,	"ounce",		{"kg": 1}),
@@ -96,20 +106,20 @@ avoirdupoismap = {
 	"ton":		(907.18474,		"ton",			{"kg": 1})
 }
 
-troymap = {
+troy_units = {
 	"gr":		(64.7989*10**-5,"grain",		{"kg": 1}),
 	"dwt":		(0.001555173,	"pennyweight",	{"kg": 1})
 }
 
 #rpn stack, front is 0
-temperaturemap = {
+temperature_rpn = {
 	"°F": [32, "-", 5, "*", 9, "/", 273.15, "+"],
 	"°C": [273.15, "+"],
 	"_K_to_°C": [273.15, "-"],
 	"_K_to_°F": [273.15, "-", 9, "*", 5, "/", 32, "+"]
 }
 
-prefixmap = {
+prefix_multipliers = {
 	"Y": 10**24,
 	"Z": 10**21,
 	"E": 10**18,
@@ -132,7 +142,7 @@ prefixmap = {
 	"y": 10**-24
 }
 
-prefixnamemap = {
+prefix_multipliers_name = {
 	"Y": "yotta",
 	"Z": "zetta",
 	"E": "exa",
@@ -167,6 +177,6 @@ def sanitycheck(unitmap):
 				raise ValueError("sanitycheck: unit is not si base: " + key + " (" + uk + ")")
 
 def sanitycheck_defaults():
-	maps = [unitmap, customaryunitmap, avoirdupoismap, troymap]
+	maps = [metric_units, metric_customary_units, customary_units, customary_dry_units, customary_wet_units, avoirdupois_units, troy_units]
 	for m in maps:
 		sanitycheck(m)

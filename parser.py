@@ -24,7 +24,7 @@ class Parser:
 
 		tcount = 0
 		for key in r.units:
-			if key in units.temperaturemap:
+			if key in units.temperature_rpn:
 				tcount += 1
 		if tcount > 1:
 			raise UnitParseError("too many temperature units: " + numstr)
@@ -184,9 +184,9 @@ class Parser:
 			#triedprefix: if parsing with a prefix fails, try again without a prefix
 			if triedprefixidx == -1:
 				#check if the unit has a prefix
-				if i != len(unitstr) - 1 and unitstr[i] in units.prefixmap:
+				if i != len(unitstr) - 1 and unitstr[i] in units.prefix_multipliers:
 					prefix = unitstr[i]
-					prefixmult = units.prefixmap[prefix]
+					prefixmult = units.prefix_multipliers[prefix]
 					triedprefixidx = i
 					i += 1
 			else:
@@ -208,7 +208,7 @@ class Parser:
 				ustr = unitstr[i:j]
 				multiplier, _, unitdict = uresult
 
-				if ustr in units.temperaturemap:
+				if ustr in units.temperature_rpn:
 					temperature_rpn(num, ustr)
 
 				#power only applies to last unit if unitstr contains multiple units
@@ -247,23 +247,22 @@ class Parser:
 
 	def getUnit(self, u):
 		if self.system == "metric":
-			if u in units.unitmap:
-				return units.unitmap[u]
-			if u in units.metric_customarymap:
-				return units.metric_customarymap[u]
+			if u in units.metric_units:
+				return units.metric_units[u]
+			if u in units.metric_customary_units:
+				return units.metric_customary_units[u]
 			return None
 		if self.system == "customary":
-			if u in units.customaryunitmap:
-				return units.customaryunitmap[u]
-			if u in units.metric_customarymap:
-				return units.metric_customarymap[u]
+			if u in units.customary_units:
+				return units.customary_units[u]
+			if u in units.metric_customary_units:
+				return units.metric_customary_units[u]
 			return None
 
 		raise ValueError("unknown measurement system: " + self.system)
 
-
 def temperature_rpn(num, u):
-	ustack = units.temperaturemap[u]
+	ustack = units.temperature_rpn[u]
 	curstack = []
 
 	for e in ustack:

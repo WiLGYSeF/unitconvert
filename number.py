@@ -166,7 +166,7 @@ class Number:
 
 			#check if temperature needs to be converted (special case)
 			for key in c.units:
-				if key in units.temperaturemap:
+				if key in units.temperature_rpn:
 					if key != "K":
 						tempconvert = True
 						#can only handle single-unit temperature conversions
