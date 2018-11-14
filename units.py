@@ -111,7 +111,13 @@ customary_wet_units = {
 	"bbl":		(0.11924047, "barrel", {"m": 3})
 }
 
-customary_possibleprefix = ["fl", "short", "long", "oz", "lb"]
+customary_possibleprefix = {
+	"fl": ["dr", "oz"],
+	"short": ["ton"],
+	"long": ["hundredweight", "ton"],
+	"oz": ["t"],
+	"lb": ["t"]
+}
 
 avoirdupois_units = {
 	"gr":		(64.7989*10**-5,"grain",		{"kg": 1}),
