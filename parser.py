@@ -252,11 +252,23 @@ class Parser:
 			if u in units.metric_customary_units:
 				return units.metric_customary_units[u]
 			return None
-		if self.system == "customary":
+		if self.system == "customary" or self.system == "customary_dry" or self.system == "customary_wet":
 			if u in units.customary_units:
 				return units.customary_units[u]
 			if u in units.metric_customary_units:
 				return units.metric_customary_units[u]
+
+			if self.system == "customary_dry":
+				if u in units.customary_dry_units:
+					return units.customary_dry_units[u]
+				if u in units.customary_wet_units:
+					return units.customary_wet_units[u]
+			else:
+				if u in units.customary_wet_units:
+					return units.customary_wet_units[u]
+				if u in units.customary_dry_units:
+					return units.customary_dry_units[u]
+
 			return None
 
 		raise ValueError("unknown measurement system: " + self.system)
