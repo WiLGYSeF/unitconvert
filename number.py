@@ -15,12 +15,14 @@ class Number:
 			"cd": 0
 		}
 		self.units = {}
+		self.system = "metric"
 
 		if num is None:
 			return
 
 		if prsr is None:
 			prsr = parser.Parser()
+		self.system = prsr.system
 
 		r = prsr.parse(num)
 		self.magnitude = r.magnitude
@@ -141,7 +143,7 @@ class Number:
 		n.units = self.units.copy()
 		return n
 
-	def string(self, converts="", space=False, caret=False, scientific=False, printunits=True, sigfig=-1, roundnum=None):
+	def string(self, converts="", space=False, caret=False, scientific=False, printunits=True, sigfig=-1, roundnum=None, prsr=None):
 		if sigfig >= 0 and roundnum is not None:
 			raise ValueError("cannot round and express significant figures")
 
@@ -161,7 +163,10 @@ class Number:
 						converts += self.unitFloatToStr(n.units[key])
 					converts += " "
 
-			c = Number("1 " + converts)
+				if prsr is None:
+					prsr = parser.Parser(system=self.system)
+
+			c = Number("1 " + converts, prsr)
 			n = self.copy()
 
 			#check if temperature needs to be converted (special case)
