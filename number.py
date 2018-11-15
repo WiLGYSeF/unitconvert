@@ -90,7 +90,7 @@ class Number:
 
 	def pow(self, o):
 		if isinstance(o, Number):
-			raise TypeError("expected scalar unit")
+			raise TypeError("expected scalar number")
 
 		for key in self.base:
 			self.base[key] *= o
@@ -149,11 +149,9 @@ class Number:
 		if sigfig >= 0 and roundnum is not None:
 			raise ValueError("cannot round and express significant figures")
 
-		order = ["kg", "m", "s", "K", "A", "mol", "cd"]
+		n = self
 		s = ""
 		tempconvert = False
-
-		n = self
 
 		#convert if converts option is not None
 		if converts is not None:
@@ -206,7 +204,7 @@ class Number:
 			prsr = parser.Parser(system=self.system)
 
 		#create unit string
-		for key in order:
+		for key in units.metricbase:
 			if n.base[key] != 0:
 				s += key
 				if n.base[key] != 1:
