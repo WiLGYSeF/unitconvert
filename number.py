@@ -158,8 +158,7 @@ class Number:
 			raise ValueError("cannot round and express significant figures")
 
 		n = self
-		s = ""
-		tempconvert = False
+		converted = ""
 
 		#convert if converts option is not None
 		if converts is not None:
@@ -177,30 +176,30 @@ class Number:
 			c = Number("1 " + converts, prsr)
 			n = self.copy()
 
+			tempconvert = False
+
 			#check if temperature needs to be converted (special case)
 			for key in c.units:
-				if key in units.temperature_rpn:
-					if key != "K":
-						tempconvert = True
-						#can only handle single-unit temperature conversions
-						if len(c.units) > 1 or c.base["K"] != n.base["K"]:
-							raise TypeError("cannot convert complex temperature units")
+				if key != "K" and key in units.temperature_rpn:
+					tempconvert = True
+					#can only handle single-unit temperature conversions
+					if len(c.units) > 1 or c.base["K"] != n.base["K"]:
+						raise TypeError("cannot convert complex temperature units")
 
-						parser.temperature_rpn(n, "_K_to_" + key)
+					parser.temperature_rpn(n, "_K_to_" + key)
 
 			#subtract unit bases from base units and create convert string
-			converts = ""
 			for key in c.units:
 				if key in c.base:
 					c.base[key] -= c.units[key]
 				else:
-					converts += key
+					converted += key
 					if c.units[key] != 1:
 						if caret:
-							converts += "^"
-						converts += c.units[key]
+							converted += "^"
+						converted += c.units[key]
 					if space:
-						converts += " "
+						converted += " "
 
 			#take difference from convert units and magnitude
 			if not tempconvert:
@@ -214,27 +213,20 @@ class Number:
 		#create unit string
 		for key in units.metricbase:
 			if n.base[key] != 0:
-				s += key
+				converted += key
 				if n.base[key] != 1:
 					if caret:
-						s += "^"
-					s += self.unitFloatToStr(n.base[key], decimaltype=prsr.decimaltype)
+						converted += "^"
+					converted += self.unitFloatToStr(n.base[key], decimaltype=prsr.decimaltype)
 				if space:
-					s += " "
-
-		magnitudestr = str(n.magnitude)
-		if converts is None:
-			unitstr = s
-		else:
-			unitstr = converts + s
+					converted += " "
 
 		if roundnum is not None:
-			n.magnitude = round(n.magnitude, roundnum)
+			nmag = round(n.magnitude, roundnum)
 
-		magnitudestr = self.floatToStr(n.magnitude, sigfig, scientific=scientific, decimaltype=prsr.decimaltype)
-
+		magnitudestr = self.floatToStr(nmag, sigfig, scientific=scientific, decimaltype=prsr.decimaltype)
 		if printunits:
-			magnitudestr += " " + unitstr.strip()
+			magnitudestr += " " + converted.strip()
 
 		return magnitudestr
 
@@ -253,7 +245,7 @@ class Number:
 
 			hasdot = "." in fstr
 
-			#fix up digits
+			#fix up round_to_n result to sigfig digits
 			if (hasdot and len(fstr) - 1 != sigfig) or (not hasdot and len(fstr) != sigfig):
 				if not hasdot:
 					#add more zeros to fit sigfig
