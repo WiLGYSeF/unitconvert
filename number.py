@@ -65,7 +65,11 @@ class Number:
 
 		for key in self.base:
 			self.base[key] += o.base[key]
-		self.units.update(o.units)
+		for key in self.units:
+			if key in o.units:
+				self.units[key] += o.units[key]
+			else:
+				self.units[key] = o.units[key]
 
 		self.magnitude *= o.magnitude
 		return self
@@ -80,7 +84,11 @@ class Number:
 
 		for key in self.base:
 			self.base[key] -= o.base[key]
-		self.units.update(o.units)
+		for key in self.units:
+			if key in o.units:
+				self.units[key] -= o.units[key]
+			else:
+				self.units[key] = -o.units[key]
 
 		self.magnitude /= o.magnitude
 		return self
