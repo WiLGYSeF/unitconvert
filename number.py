@@ -1,3 +1,5 @@
+from token import TokenType
+
 import math
 import parser
 import units
@@ -157,14 +159,14 @@ class Number:
 		if converts is not None:
 			#if blank, automatically use units when Number was initialized
 			if converts == "":
+				if prsr is None:
+					prsr = parser.Parser(system=self.system)
+
 				for key in n.units:
 					converts += key
 					if n.units[key] != 0:
-						converts += self.unitFloatToStr(n.units[key])
+						converts += self.unitFloatToStr(n.units[key], decimaltype=prsr.decimaltype)
 					converts += " "
-
-				if prsr is None:
-					prsr = parser.Parser(system=self.system)
 
 			c = Number("1 " + converts, prsr)
 			n = self.copy()
@@ -200,6 +202,9 @@ class Number:
 			for key in c.base:
 				n.base[key] -= c.base[key]
 
+		if prsr is None:
+			prsr = parser.Parser(system=self.system)
+
 		#create unit string
 		for key in order:
 			if n.base[key] != 0:
@@ -207,7 +212,7 @@ class Number:
 				if n.base[key] != 1:
 					if caret:
 						s += "^"
-					s += self.unitFloatToStr(n.base[key])
+					s += self.unitFloatToStr(n.base[key], decimaltype=prsr.decimaltype)
 				if space:
 					s += " "
 
@@ -220,7 +225,7 @@ class Number:
 		if roundnum is not None:
 			n.magnitude = round(n.magnitude, roundnum)
 
-		magnitudestr = self.floatToStr(n.magnitude, sigfig, scientific=scientific)
+		magnitudestr = self.floatToStr(n.magnitude, sigfig, scientific=scientific, decimaltype=prsr.decimaltype)
 
 		if printunits:
 			magnitudestr += " " + unitstr.strip()
@@ -231,7 +236,7 @@ class Number:
 		return self.string()
 
 	@staticmethod
-	def floatToStr(f, sigfig, scientific=False):
+	def floatToStr(f, sigfig, scientific=False, decimaltype=TokenType.PERIOD):
 		fstr = str(f)
 
 		if sigfig >= 0:
@@ -274,10 +279,17 @@ class Number:
 			fstr = str(f)
 
 			if neg:
-				return "-" + fstr + "E" + str(power)
-			return fstr + "E" + str(power)
+				fstr = "-" + fstr + "E" + str(power)
+			fstr += "E" + str(power)
+
+		if decimaltype == TokenType.COMMA:
+			fstr = fstr.replace(".", ",")
 		return fstr
 
 	@staticmethod
-	def unitFloatToStr(f):
-		return format(f, ".15f").rstrip("0").rstrip(".")
+	def unitFloatToStr(f, decimaltype=TokenType.PERIOD):
+		fstr = format(f, ".15f").rstrip("0").rstrip(".")
+		if decimaltype == TokenType.COMMA:
+			fstr = fstr.replace(".", ",")
+
+		return fstr

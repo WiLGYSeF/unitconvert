@@ -5,8 +5,8 @@ from token import Token, TokenType
 import units
 
 class Parser:
-	def __init__(self, system="metric"):
-		self.decimaltype = TokenType.PERIOD
+	def __init__(self, system="metric", decimaltype=TokenType.PERIOD):
+		self.decimaltype = decimaltype
 		self.system = system
 
 		self.errmsg = ""
