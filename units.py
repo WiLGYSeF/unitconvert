@@ -115,8 +115,7 @@ customary_possibleprefix = {
 	"fl": ["dr", "oz"],
 	"short": ["ton"],
 	"long": ["hundredweight", "ton"],
-	"oz": ["t"],
-	"lb": ["t"]
+	"t": ["oz", "lb"]
 }
 
 avoirdupois_units = {
@@ -134,8 +133,12 @@ avoirdupois_units = {
 troy_units = {
 	"gr":		(64.7989*10**-5,"grain",		{"kg": 1}),
 	"dwt":		(0.001555173,	"pennyweight",	{"kg": 1}),
-	"oz t":		(0.031103476,	"troy ounce",	{"kg": 1}),
-	"lb t":		(0.373241721,	"troy pound",	{"kg": 1})
+	"oz":		(0.031103476,	"troy ounce",	{"kg": 1}),
+	#also "oz t", but cannot handle
+	"t oz":		(0.031103476,	"troy ounce",	{"kg": 1}),
+	"lb":		(0.373241721,	"troy pound",	{"kg": 1}),
+	#also "lb t", but cannot handle
+	"t lb":		(0.373241721,	"troy pound",	{"kg": 1})
 }
 
 #rpn stack, front is 0
