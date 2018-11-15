@@ -12,9 +12,14 @@ class Parser:
 		self.errmsg = ""
 		self.lex = None
 
+		#static variable for unitParse()
+		self.lastunit = None
+
 	def parse(self, numstr):
 		if numstr is None:
 			return
+
+		self.lastunit = None
 
 		self.lex = Lex(StringStream(numstr))
 		r = self._number()
@@ -179,37 +184,62 @@ class Parser:
 		prefixmult = 1
 		i = 0
 		triedprefixidx = -1
+		firstunit = True
 
 		while i < len(unitstr):
 			#triedprefix: if parsing with a prefix fails, try again without a prefix
 			if triedprefixidx == -1:
 				#check if the unit has a prefix
-				if i != len(unitstr) - 1 and unitstr[i] in units.prefix_multipliers:
-					prefix = unitstr[i]
-					prefixmult = units.prefix_multipliers[prefix]
-					triedprefixidx = i
-					i += 1
+				j = len(unitstr) - 1
+				while i < j:
+					if unitstr[i:j] in units.prefix_multipliers:
+						prefix = unitstr[i:j]
+						prefixmult = units.prefix_multipliers[prefix]
+						triedprefixidx = i
+						i += len(prefix)
+					j -= 1
 			else:
 				prefix = ""
 				prefixmult = 1
 				i = triedprefixidx
 				triedprefixidx = -1
 
-			#find longest matching unit in table
+			ustr = ""
 			uresult = None
 			j = len(unitstr)
-			while i <= j:
-				uresult = self.getUnit(unitstr[i:j])
-				if uresult is not None:
-					break
-				j -= 1
+
+			if firstunit and self.lastunit is not None and self.system.startswith("customary"):
+				#find longest matching unit in table
+				i = 0
+				while i < j:
+					if unitstr[i:j] in units.customary_possibleprefix[self.lastunit]:
+						break
+					j -= 1
+
+				if i < j:
+					ustr = self.lastunit + " " + unitstr[i:j]
+					uresult = self.getUnit(ustr)
+					self.lastunit = None
+				else:
+					raise UnitParseError("unit prefix with unknown unit: " + self.lastunit + " " + unitstr, {"unit": unitstr})
+			else:
+				#find longest matching unit in table
+				while i < j:
+					uresult = self.getUnit(unitstr[i:j])
+					if uresult is not None:
+						break
+					j -= 1
+
+				if i < j:
+					ustr = unitstr[i:j]
 
 			if uresult is not None:
-				ustr = unitstr[i:j]
 				multiplier, _, unitdict = uresult
 
 				if ustr in units.temperature_rpn:
 					temperature_rpn(num, ustr)
+
+				ustr = prefix + ustr
 
 				#power only applies to last unit if unitstr contains multiple units
 
@@ -218,28 +248,31 @@ class Parser:
 
 					for key in unitdict:
 						num.base[key] += unitdict[key] * power
+
+					if ustr in num.units:
+						num.units[ustr] += power
+					else:
+						num.units[ustr] = power
 				else:
 					num.magnitude *= multiplier * prefixmult
 
 					for key in unitdict:
 						num.base[key] += unitdict[key]
 
-				ustr = prefix + ustr
-				if ustr in num.units:
-					if j == len(unitstr):
-						num.units[ustr] += power
-					else:
+					if ustr in num.units:
 						num.units[ustr] += 1
-				else:
-					if j == len(unitstr):
-						num.units[ustr] = power
 					else:
 						num.units[ustr] = 1
 
 				prefix = ""
 				prefixmult = 1
 				triedprefixidx = -1
+				firstunit = False
 			else:
+				if unitstr[i:] in units.customary_possibleprefix and power == 1:
+					self.lastunit = unitstr[i:]
+					return
+
 				if triedprefixidx == -1:
 					raise UnitParseError("unknown unit: " + unitstr[i:], {"unit": unitstr[i:]})
 
