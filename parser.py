@@ -246,19 +246,20 @@ class Parser:
 			i = j
 
 	def getUnit(self, u):
-		if self.system == "metric":
+		sysspl = self.system.split("_")
+		if sysspl[0] == "metric":
 			if u in units.metric_units:
 				return units.metric_units[u]
 			if u in units.metric_customary_units:
 				return units.metric_customary_units[u]
 			return None
-		if self.system == "customary" or self.system == "customary_dry" or self.system == "customary_wet":
+		if sysspl[0] == "customary":
 			if u in units.customary_units:
 				return units.customary_units[u]
 			if u in units.metric_customary_units:
 				return units.metric_customary_units[u]
 
-			if self.system == "customary_dry":
+			if "dry" in sysspl:
 				if u in units.customary_dry_units:
 					return units.customary_dry_units[u]
 				if u in units.customary_wet_units:
@@ -268,6 +269,17 @@ class Parser:
 					return units.customary_wet_units[u]
 				if u in units.customary_dry_units:
 					return units.customary_dry_units[u]
+
+			if "troy" in sysspl:
+				if u in units.troy_units:
+					return units.troy_units[u]
+				if u in units.avoirdupois_units:
+					return units.avoirdupois_units[u]
+			else:
+				if u in units.avoirdupois_units:
+					return units.avoirdupois_units[u]
+				if u in units.troy_units:
+					return units.troy_units[u]
 
 			return None
 

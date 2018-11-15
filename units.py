@@ -120,17 +120,22 @@ customary_possibleprefix = {
 }
 
 avoirdupois_units = {
-	"gr":		(64.7989*10**-5,"grain",		{"kg": 1}),
+	"gr":		(64.7989*10**-5, "grain",		{"kg": 1}),
 	"dr":		(0.001771845,	"dram",			{"kg": 1}),
 	"oz":		(0.028349523,	"ounce",		{"kg": 1}),
 	"lb":		(0.45359237,	"pound",		{"kg": 1}),
-	"cwt":		(45.359237,		"hundredweight",{"kg": 1}),
-	"ton":		(907.18474,		"ton",			{"kg": 1})
+	"cwt":		(45.359237,		"hundredweight", {"kg": 1}),
+	"long hundredweight": (50.802345, "long hundredweight",{"kg": 1}),
+	"ton":		(907.18474,		"ton",			{"kg": 1}),
+	"short ton": (907.18474, "short ton", {"kg": 1}),
+	"long ton": (1016.0469, "long ton", {"kg": 1})
 }
 
 troy_units = {
 	"gr":		(64.7989*10**-5,"grain",		{"kg": 1}),
-	"dwt":		(0.001555173,	"pennyweight",	{"kg": 1})
+	"dwt":		(0.001555173,	"pennyweight",	{"kg": 1}),
+	"oz t":		(0.031103476,	"troy ounce",	{"kg": 1}),
+	"lb t":		(0.373241721,	"troy pound",	{"kg": 1})
 }
 
 #rpn stack, front is 0
