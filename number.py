@@ -65,8 +65,8 @@ class Number:
 
 		for key in self.base:
 			self.base[key] += o.base[key]
-		for key in self.units:
-			if key in o.units:
+		for key in o.units:
+			if key in self.units:
 				self.units[key] += o.units[key]
 			else:
 				self.units[key] = o.units[key]
@@ -84,8 +84,8 @@ class Number:
 
 		for key in self.base:
 			self.base[key] -= o.base[key]
-		for key in self.units:
-			if key in o.units:
+		for key in o.units:
+			if key in self.units:
 				self.units[key] -= o.units[key]
 			else:
 				self.units[key] = -o.units[key]
@@ -223,6 +223,8 @@ class Number:
 
 		if roundnum is not None:
 			nmag = round(n.magnitude, roundnum)
+		else:
+			nmag = str(n.magnitude)
 
 		magnitudestr = self.floatToStr(nmag, sigfig, scientific=scientific, decimaltype=prsr.decimaltype)
 		if printunits:

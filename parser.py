@@ -32,11 +32,11 @@ class Parser:
 			if key in units.temperature_rpn:
 				tcount += 1
 		if tcount > 1:
-			raise UnitParseError("too many temperature units: " + numstr)
+			raise NumberParseError("too many temperature units: " + numstr, {"char": -1, "message": self.errmsg, "numstr": numstr})
 
 		return r
 
-	# <number> = <float> [ENOT] {SCONST [CARET] [<float>]}
+	# <number> = <float> [ENOT <float>] {SCONST [CARET] [<float>]}
 	def _number(self):
 		from number import Number
 
