@@ -187,22 +187,24 @@ class Parser:
 		firstunit = True
 
 		while i < len(unitstr):
-			#triedprefix: if parsing with a prefix fails, try again without a prefix
-			if triedprefixidx == -1:
-				#check if the unit has a prefix
-				j = len(unitstr) - 1
-				while i < j:
-					if unitstr[i:j] in units.prefix_multipliers:
-						prefix = unitstr[i:j]
-						prefixmult = units.prefix_multipliers[prefix]
-						triedprefixidx = i
-						i += len(prefix)
-					j -= 1
-			else:
-				prefix = ""
-				prefixmult = 1
-				i = triedprefixidx
-				triedprefixidx = -1
+			if self.system.startswith("metric"):
+				#triedprefix: if parsing with a prefix fails, try again without a prefix
+				if triedprefixidx == -1:
+					#check if the unit has a prefix
+					u = unitstr[i:]
+					j = len(unitstr) - 1
+					while i < j:
+						if u[:j] in units.prefix_multipliers:
+							prefix = u[:j]
+							prefixmult = units.prefix_multipliers[prefix]
+							triedprefixidx = i
+							i += len(prefix)
+						j -= 1
+				else:
+					prefix = ""
+					prefixmult = 1
+					i = triedprefixidx
+					triedprefixidx = -1
 
 			ustr = ""
 			uresult = None
@@ -210,28 +212,30 @@ class Parser:
 
 			if firstunit and self.lastunit is not None and self.system.startswith("customary"):
 				#find longest matching unit in table
+				u = unitstr[i:]
 				i = 0
 				while i < j:
-					if unitstr[i:j] in units.customary_possibleprefix[self.lastunit]:
+					if u[:j] in units.customary_possibleprefix[self.lastunit]:
 						break
 					j -= 1
 
 				if i < j:
-					ustr = self.lastunit + " " + unitstr[i:j]
+					ustr = self.lastunit + " " + u[:j]
 					uresult = self.getUnit(ustr)
 					self.lastunit = None
 				else:
 					raise UnitParseError("unit prefix with unknown unit: " + self.lastunit + " " + unitstr, {"unit": unitstr})
 			else:
 				#find longest matching unit in table
+				u = unitstr[i:]
 				while i < j:
-					uresult = self.getUnit(unitstr[i:j])
+					uresult = self.getUnit(u[:j])
 					if uresult is not None:
 						break
 					j -= 1
 
 				if i < j:
-					ustr = unitstr[i:j]
+					ustr = u[:j]
 
 			if uresult is not None:
 				multiplier, _, unitdict = uresult
@@ -269,7 +273,7 @@ class Parser:
 				triedprefixidx = -1
 				firstunit = False
 			else:
-				if unitstr[i:] in units.customary_possibleprefix and power == 1:
+				if unitstr[i:] in units.customary_possibleprefix and power == 1 and self.system.startswith("customary"):
 					self.lastunit = unitstr[i:]
 					return
 
