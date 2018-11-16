@@ -248,7 +248,7 @@ class Parser:
 				#power only applies to last unit if unitstr contains multiple units
 
 				if j == len(unitstr):
-					num.magnitude *= multiplier ** power * prefixmult
+					num.magnitude *= (multiplier * prefixmult) ** power
 
 					for key in unitdict:
 						num.base[key] += unitdict[key] * power
