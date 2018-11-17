@@ -9,30 +9,32 @@ class Parser:
 		self.decimaltype = decimaltype
 		self.system = system
 
-		self.errmsg = ""
+		self.errmsg = []
 		self.lex = None
 
 		#static variable for unitParse()
 		self.lastunit = None
 
 	def parse(self, numstr):
+		self.errmsg = []
+		self.lastunit = None
+
 		if numstr is None:
 			return
-
-		self.lastunit = None
 
 		self.lex = Lex(StringStream(numstr))
 		r = self._number()
 
 		if not r:
-			raise NumberParseError("invalid number: " + self.errmsg + " (" + numstr + ")", {"char": self.lex.peekToken().character, "message": self.errmsg, "numstr": numstr})
+			raise NumberParseError("invalid number: " + numstr, {"messages": self.errmsg, "numstr": numstr})
 
-		tcount = 0
+		#don't knowhow to parse multiple temperature units
+		tmptr = None
 		for key in r.units:
 			if key in units.temperature_rpn:
-				tcount += 1
-		if tcount > 1:
-			raise NumberParseError("too many temperature units: " + numstr, {"char": -1, "message": self.errmsg, "numstr": numstr})
+				if tmptr is not None and key != tmptr:
+					raise NumberParseError("too many temperature units: " + numstr, {"messages": [], "numstr": numstr})
+				tmptr = key
 
 		return r
 
@@ -52,6 +54,7 @@ class Parser:
 		if token == TokenType.ENOT:
 			n = self._float()
 			if n is None:
+				self.error("expected number for e-notation", token.character)
 				return None
 
 			num.magnitude *= 10 ** n
@@ -59,9 +62,13 @@ class Parser:
 		while True:
 			if token is None or token == TokenType.DONE:
 				break
+			if token == TokenType.ERR:
+				self.lex.ungetToken(token)
+				self.error("unknown token", token.character)
+				return None
 			if token != TokenType.SCONST:
 				self.lex.ungetToken(token)
-				self.errmsg = "expected unit"
+				self.error("expected unit", token.character)
 				return None
 
 			stok = token
@@ -75,7 +82,7 @@ class Parser:
 			if n is None:
 				if token != TokenType.DONE and token != TokenType.SCONST:
 					self.lex.ungetToken(token)
-					self.errmsg = "expected number or unit"
+					self.error("expected number or unit after unit", token.character)
 					return None
 			else:
 				power = n
@@ -126,10 +133,10 @@ class Parser:
 				return float("0." + token.lexeme) * negative
 
 			self.lex.ungetToken(token)
-			self.errmsg = "expected integer"
+			self.error("expected integer after decimal", token.character)
 			return None
 
-		self.errmsg = "expected number"
+		self.error("expected number", self.lex.peekToken().character)
 		return None
 
 	"""
@@ -146,7 +153,7 @@ class Parser:
 
 		if token != TokenType.ICONST:
 			self.lex.ungetToken(token)
-			self.errmsg = "expected integer constant"
+			self.error("expected integer constant", token.character)
 			return None
 
 		value = int(token.lexeme)
@@ -158,7 +165,7 @@ class Parser:
 					token = self.lex.getToken()
 					if token != TokenType.ICONST:
 						self.lex.ungetToken(token)
-						self.errmsg = "expected integer constant"
+						self.error("expected integer constant", token.character)
 						return None
 
 					value = value * 10 ** len(token.lexeme) + int(token.lexeme)
@@ -169,12 +176,14 @@ class Parser:
 					token = self.lex.getToken()
 					if token != TokenType.ICONST:
 						self.lex.ungetToken(token)
-						self.errmsg = "expected integer constant"
+						self.error("expected integer constant", token.character)
 						return None
 
 					value = value * 10 ** len(token.lexeme) + int(token.lexeme)
 				else:
 					break
+			else:
+				break
 
 		self.lex.ungetToken(token)
 		return value
@@ -321,6 +330,9 @@ class Parser:
 			return None
 
 		raise ValueError("unknown measurement system: " + self.system)
+
+	def error(self, message, char):
+		self.errmsg.append( (char, message) )
 
 def temperature_rpn(num, u):
 	ustack = units.temperature_rpn[u]
