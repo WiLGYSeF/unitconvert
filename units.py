@@ -1,6 +1,6 @@
 ﻿# http://www.us-metric.org/detailed-list-of-metric-system-units-symbols-and-prefixes/
 
-metricbase = ["kg", "m", "s", "K", "A", "mol", "cd"]
+metricbase = ("kg", "m", "s", "K", "A", "mol", "cd")
 
 metric_units = {
 	"g":		(0.001,			"gram",			{"kg": 1}),
@@ -143,10 +143,10 @@ troy_units = {
 
 #rpn stack, front is 0
 temperature_rpn = {
-	"°F": [32, "-", 5, "*", 9, "/", 273.15, "+"],
-	"°C": [273.15, "+"],
-	"_K_to_°C": [273.15, "-"],
-	"_K_to_°F": [273.15, "-", 9, "*", 5, "/", 32, "+"]
+	"°F": (32, "-", 5, "*", 9, "/", 273.15, "+"),
+	"°C": (273.15, "+"),
+	"_K_to_°C": (273.15, "-"),
+	"_K_to_°F": (273.15, "-", 9, "*", 5, "/", 32, "+")
 }
 
 prefix_multipliers = {
@@ -207,6 +207,6 @@ def sanitycheck(unitmap):
 				raise ValueError("sanitycheck: unit is not si base: " + key + " (" + uk + ")")
 
 def sanitycheck_defaults():
-	maps = [metric_units, metric_customary_units, customary_units, customary_dry_units, customary_wet_units, avoirdupois_units, troy_units]
+	maps = (metric_units, metric_customary_units, customary_units, customary_dry_units, customary_wet_units, avoirdupois_units, troy_units)
 	for m in maps:
 		sanitycheck(m)
