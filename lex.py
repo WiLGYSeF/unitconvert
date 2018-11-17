@@ -44,7 +44,9 @@ class Lex:
 			if ch == "^":
 				return Token(TokenType.CARET, "", self.stream.tell())
 			if ch.isdigit():
+				char = self.stream.tell()
 				s = ch
+
 				while True:
 					ch = self.stream.get()
 					if ch is None:
@@ -55,7 +57,7 @@ class Lex:
 						self.stream.unget()
 						break
 
-				return Token(TokenType.ICONST, s, self.stream.tell())
+				return Token(TokenType.ICONST, s, char)
 			if ch == ".":
 				return Token(TokenType.PERIOD, "", self.stream.tell())
 			if ch == ",":
@@ -65,7 +67,9 @@ class Lex:
 					if not self.stream.peek().isalpha():
 						return Token(TokenType.ENOT, ch, self.stream.tell())
 
+				char = self.stream.tell()
 				s = ch
+
 				while True:
 					ch = self.stream.get()
 					if ch is None:
@@ -76,7 +80,7 @@ class Lex:
 						self.stream.unget()
 						break
 
-				return Token(TokenType.SCONST, s, self.stream.tell())
+				return Token(TokenType.SCONST, s, char)
 
 			return Token(TokenType.ERR, ch, self.stream.tell())
 		return Token(TokenType.DONE, "", self.stream.tell())
