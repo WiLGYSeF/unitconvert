@@ -205,13 +205,15 @@ class Parser:
 				if triedprefixidx == -1:
 					#check if the unit has a prefix
 					u = unitstr[i:]
-					j = len(unitstr) - 1
-					while i < j:
+					j = len(u) - 1
+
+					while j > 0:
 						if u[:j] in units.prefix_multipliers:
 							prefix = u[:j]
 							prefixmult = units.prefix_multipliers[prefix]
 							triedprefixidx = i
 							i += len(prefix)
+							break
 						j -= 1
 				else:
 					prefix = ""
@@ -221,18 +223,18 @@ class Parser:
 
 			ustr = ""
 			uresult = None
-			j = len(unitstr)
 
 			if firstunit and self.lastunit is not None and self.system.startswith("customary"):
 				#find longest matching unit in table
-				u = unitstr[i:]
-				i = 0
-				while i < j:
+				u = unitstr
+				j = len(u)
+
+				while j > 0:
 					if u[:j] in units.customary_possibleprefix[self.lastunit]:
 						break
 					j -= 1
 
-				if i < j:
+				if j > 0:
 					ustr = self.lastunit + " " + u[:j]
 					uresult = self.getUnit(ustr)
 					self.lastunit = None
@@ -241,13 +243,15 @@ class Parser:
 			else:
 				#find longest matching unit in table
 				u = unitstr[i:]
-				while i < j:
+				j = len(u)
+
+				while j > 0:
 					uresult = self.getUnit(u[:j])
 					if uresult is not None:
 						break
 					j -= 1
 
-				if i < j:
+				if j > 0:
 					ustr = u[:j]
 
 			if uresult is not None:
@@ -259,8 +263,7 @@ class Parser:
 				ustr = prefix + ustr
 
 				#power only applies to last unit if unitstr contains multiple units
-
-				if j == len(unitstr):
+				if j == len(u):
 					num.magnitude *= (multiplier * prefixmult) ** power
 
 					for key in unitdict:
@@ -293,7 +296,7 @@ class Parser:
 				if triedprefixidx == -1:
 					raise UnitParseError("unknown unit: " + unitstr[i:], {"unit": unitstr[i:]})
 
-			i = j
+			i += j
 
 	def getUnit(self, u):
 		sysspl = self.system.split("_")
