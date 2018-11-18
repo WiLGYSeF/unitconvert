@@ -1,8 +1,5 @@
 from token import Token, TokenType
-
-start_unitsymbols = ["°"]
-middle_unitsymbols = ["-"]
-end_unitsymbols = []
+import units
 
 class Lex:
 	def __init__(self, stream):
@@ -98,12 +95,12 @@ class Lex:
 
 	@staticmethod
 	def isStartUnitChar(ch):
-		return ch.isalpha() or ch in start_unitsymbols
+		return ch.isalpha() or ch in units.start_unitsymbols
 
 	@staticmethod
 	def isUnitChar(ch):
-		return ch.isalpha() or ch in start_unitsymbols or ch in middle_unitsymbols or ch in end_unitsymbols
+		return ch.isalpha() or ch in units.start_unitsymbols or ch in units.middle_unitsymbols or ch in units.end_unitsymbols
 
 	@staticmethod
 	def isEndUnitChar(ch):
-		return ch.isalpha() or ch in end_unitsymbols
+		return ch.isalpha() or ch in units.end_unitsymbols

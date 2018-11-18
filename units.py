@@ -2,6 +2,10 @@
 
 metricbase = ("kg", "m", "s", "K", "A", "mol", "cd")
 
+start_unitsymbols = ["°"]
+middle_unitsymbols = ["-"]
+end_unitsymbols = []
+
 metric_units = {
 	"g":		(0.001,			"gram",			{"kg": 1}),
 	"m":		(1,				"meter",		{"m": 1}),
