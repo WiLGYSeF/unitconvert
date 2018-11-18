@@ -69,11 +69,11 @@ class Parser:
 			if token is None or token == TokenType.DONE:
 				break
 			if token == TokenType.ERR:
-				self.lex.ungetToken(token)
+				#self.lex.ungetToken(token)
 				self.error("unknown token", token.character)
 				return None
 			if token != TokenType.SCONST:
-				self.lex.ungetToken(token)
+				#self.lex.ungetToken(token)
 				self.error("expected unit", token.character)
 				return None
 
@@ -87,7 +87,7 @@ class Parser:
 			n = self._float()
 			if n is None:
 				if token != TokenType.DONE and token != TokenType.SCONST:
-					self.lex.ungetToken(token)
+					#self.lex.ungetToken(token)
 					self.error("expected number or unit after unit", token.character)
 					return None
 			else:
