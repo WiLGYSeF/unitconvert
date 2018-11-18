@@ -58,6 +58,8 @@ class Parser:
 				return None
 
 			num.magnitude *= 10 ** n
+			token = self.lex.peekToken()
+
 
 		while True:
 			if token is None or token == TokenType.DONE:
@@ -120,21 +122,25 @@ class Parser:
 			if token == TokenType.PERIOD:
 				token = self.lex.getToken()
 				if token == TokenType.ICONST:
-					return n + float("." + token.lexeme) * negative
+					return (n + float("." + token.lexeme)) * negative
 
 				self.lex.ungetToken(token)
 				return n * negative
 
 			self.lex.ungetToken(token)
 			return n * negative
-		elif token == TokenType.PERIOD:
+		else:
 			token = self.lex.getToken()
-			if token == TokenType.ICONST:
-				return float("0." + token.lexeme) * negative
+			if token == TokenType.PERIOD:
+				token = self.lex.getToken()
+				if token == TokenType.ICONST:
+					return float("0." + token.lexeme) * negative
+
+				self.lex.ungetToken(token)
+				self.error("expected integer after decimal", token.character)
+				return None
 
 			self.lex.ungetToken(token)
-			self.error("expected integer after decimal", token.character)
-			return None
 
 		self.error("expected number", self.lex.peekToken().character)
 		return None
