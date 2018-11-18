@@ -64,7 +64,8 @@ class Lex:
 				return Token(TokenType.COMMA, "", self.stream.tell())
 			if self.isUnitChar(ch):
 				if ch == "E" or ch == "e":
-					if not self.stream.peek().isalpha():
+					peek = self.stream.peek()
+					if peek is not None and not peek.isalpha():
 						return Token(TokenType.ENOT, ch, self.stream.tell())
 
 				char = self.stream.tell()

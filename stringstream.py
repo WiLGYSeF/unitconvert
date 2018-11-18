@@ -47,6 +47,8 @@ class StringStream:
 			self.offset -= 1
 
 	def peek(self):
+		if self.offset == len(self.string):
+			return None
 		return self.string[self.offset]
 
 	def tell(self):
