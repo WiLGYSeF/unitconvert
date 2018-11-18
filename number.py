@@ -197,7 +197,7 @@ class Number:
 					if c.units[key] != 1:
 						if caret:
 							converted += "^"
-						converted += c.units[key]
+						converted += self.unitFloatToStr(c.units[key], decimaltype=prsr.decimaltype)
 					if space:
 						converted += " "
 
