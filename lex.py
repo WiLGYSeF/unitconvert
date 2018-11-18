@@ -1,6 +1,8 @@
 from token import Token, TokenType
 
-unitsymbols = ["°"]
+start_unitsymbols = ["°"]
+middle_unitsymbols = ["-"]
+end_unitsymbols = []
 
 class Lex:
 	def __init__(self, stream):
@@ -16,8 +18,9 @@ class Lex:
 		return self.getNextToken()
 
 	def ungetToken(self, token):
+		# maintain efficiency O(n)
 		if self.token_putback is not None:
-			raise RuntimeError("ungetToken called more than once")
+			raise RuntimeError("fatal: ungetToken() called more than once")
 
 		self.token_putback = token
 
@@ -62,7 +65,7 @@ class Lex:
 				return Token(TokenType.PERIOD, "", self.stream.tell())
 			if ch == ",":
 				return Token(TokenType.COMMA, "", self.stream.tell())
-			if self.isUnitChar(ch):
+			if self.isStartUnitChar(ch):
 				if ch == "E" or ch == "e":
 					peek = self.stream.peek()
 					if peek is not None and not peek.isalpha():
@@ -74,10 +77,15 @@ class Lex:
 				while True:
 					ch = self.stream.get()
 					if ch is None:
+						#if not self.isEndUnitChar(s[-1]):
+						#	return Token(TokenType.ERR, s, char)
 						break
+
 					if self.isUnitChar(ch):
 						s += ch
 					else:
+						#if not self.isEndUnitChar(s[-1]):
+						#	return Token(TokenType.ERR, s, char)
 						self.stream.unget()
 						break
 
@@ -87,5 +95,13 @@ class Lex:
 		return Token(TokenType.DONE, "", self.stream.tell())
 
 	@staticmethod
+	def isStartUnitChar(ch):
+		return ch.isalpha() or ch in start_unitsymbols
+
+	@staticmethod
 	def isUnitChar(ch):
-		return ch.isalpha() or ch in unitsymbols
+		return ch.isalpha() or ch in start_unitsymbols or ch in middle_unitsymbols or ch in end_unitsymbols
+
+	@staticmethod
+	def isEndUnitChar(ch):
+		return ch.isalpha() or ch in end_unitsymbols
