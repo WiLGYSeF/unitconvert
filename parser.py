@@ -168,30 +168,24 @@ class Parser:
 
 		value = int(token.lexeme)
 
+		if self.decimaltype != TokenType.PERIOD and self.decimaltype != TokenType.COMMA:
+			raise ValueError("unknown decimal separator type: " + str(self.decimaltype))
+
 		while True:
 			token = self.lex.getToken()
-			if self.decimaltype == TokenType.PERIOD:
-				if token == TokenType.COMMA:
-					token = self.lex.getToken()
-					if token != TokenType.ICONST:
-						self.lex.ungetToken(token)
-						self.error("expected integer constant", token.character)
-						return None
 
-					value = value * 10 ** len(token.lexeme) + int(token.lexeme)
-				else:
-					break
-			elif self.decimaltype == TokenType.COMMA:
-				if token == TokenType.PERIOD:
-					token = self.lex.getToken()
-					if token != TokenType.ICONST:
-						self.lex.ungetToken(token)
-						self.error("expected integer constant", token.character)
-						return None
+			if (self.decimaltype == TokenType.PERIOD and token == TokenType.COMMA) or (self.decimaltype == TokenType.COMMA and token == TokenType.PERIOD):
+				token = self.lex.getToken()
+				if token != TokenType.ICONST:
+					self.lex.ungetToken(token)
+					self.error("expected integer constant", token.character)
+					return None
 
-					value = value * 10 ** len(token.lexeme) + int(token.lexeme)
-				else:
-					break
+				if len(token.lexeme) != 3:
+					self.error("expected groupings of three digits", token.character)
+					return None
+
+				value = value * 10 ** len(token.lexeme) + int(token.lexeme)
 			else:
 				break
 
