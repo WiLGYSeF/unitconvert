@@ -57,9 +57,13 @@ class Parser:
 				self.error("expected number for e-notation", token.character)
 				return None
 
-			num.magnitude *= 10 ** n
-			token = self.lex.peekToken()
+			# n.is_integer()
+			if not isinstance(n, int):
+				self.error("expected integer power for e-notation", token.character)
+				return None
 
+			num.magnitude *= 10 ** n
+			token = self.lex.getToken()
 
 		while True:
 			if token is None or token == TokenType.DONE:
