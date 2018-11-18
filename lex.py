@@ -77,15 +77,17 @@ class Lex:
 				while True:
 					ch = self.stream.get()
 					if ch is None:
-						#if not self.isEndUnitChar(s[-1]):
-						#	return Token(TokenType.ERR, s, char)
+						if not self.isEndUnitChar(s[-1]):
+							s = s[:-1]
+							self.stream.unget()
 						break
 
 					if self.isUnitChar(ch):
 						s += ch
 					else:
-						#if not self.isEndUnitChar(s[-1]):
-						#	return Token(TokenType.ERR, s, char)
+						if not self.isEndUnitChar(s[-1]):
+							s = s[:-1]
+							self.stream.unget()
 						self.stream.unget()
 						break
 
