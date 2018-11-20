@@ -5,9 +5,10 @@ from token import Token, TokenType
 import units
 
 class Parser:
-	def __init__(self, system="metric", decimaltype=TokenType.PERIOD):
+	def __init__(self, system="metric", decimaltype=TokenType.PERIOD, groupingthree=True):
 		self.decimaltype = decimaltype
 		self.system = system
+		self.groupingthree = groupingthree
 
 		self.errmsg = []
 		self.lex = None
@@ -68,13 +69,12 @@ class Parser:
 		while True:
 			if token is None or token == TokenType.DONE:
 				break
-			if token == TokenType.ERR:
-				#self.lex.ungetToken(token)
-				self.error("unknown token", token.character)
-				return None
 			if token != TokenType.SCONST:
 				#self.lex.ungetToken(token)
-				self.error("expected unit", token.character)
+				if token == TokenType.ERR:
+					self.error("unknown token", token.character)
+				else:
+					self.error("expected unit", token.character)
 				return None
 
 			stok = token
@@ -88,7 +88,10 @@ class Parser:
 			if n is None:
 				if token != TokenType.DONE and token != TokenType.SCONST:
 					#self.lex.ungetToken(token)
-					self.error("expected number or unit after unit", token.character)
+					if token == TokenType.ERR:
+						self.error("unknown token", token.character)
+					else:
+						self.error("expected number or unit after unit", token.character)
 					return None
 			else:
 				power = n
@@ -159,11 +162,15 @@ class Parser:
 	"""
 	def _integer(self):
 		token = self.lex.getToken()
+		firsttoken = token
 		value = 0
 
 		if token != TokenType.ICONST:
 			self.lex.ungetToken(token)
-			self.error("expected integer constant", token.character)
+			if token == TokenType.ERR:
+				self.error("unknown token", token.character)
+			else:
+				self.error("expected integer constant", token.character)
 			return None
 
 		value = int(token.lexeme)
@@ -178,18 +185,29 @@ class Parser:
 				token = self.lex.getToken()
 				if token != TokenType.ICONST:
 					self.lex.ungetToken(token)
-					self.error("expected integer constant", token.character)
+					if token == TokenType.ERR:
+						self.error("unknown token", token.character)
+					else:
+						self.error("expected integer constant", token.character)
 					return None
 
-				if len(token.lexeme) != 3:
-					self.error("expected groupings of three digits", token.character)
-					return None
+				if self.groupingthree:
+					if firsttoken is not None and len(firsttoken.lexeme) > 3:
+						#self.lex.ungetToken(token)
+						self.error("expected grouping of at most three digits", firsttoken.character)
+						return None
+
+					if len(token.lexeme) != 3:
+						#self.lex.ungetToken(token)
+						self.error("expected groupings of three digits", token.character)
+						return None
 
 				value = value * 10 ** len(token.lexeme) + int(token.lexeme)
+				firsttoken = None
 			else:
+				self.lex.ungetToken(token)
 				break
 
-		self.lex.ungetToken(token)
 		return value
 
 	def unitParse(self, num, unitstr, power):
