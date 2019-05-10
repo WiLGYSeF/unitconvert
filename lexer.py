@@ -1,7 +1,7 @@
 from token import Token, TokenType
 import units
 
-class Lex:
+class Lexer:
 	def __init__(self, stream):
 		self.stream = stream
 		self.token_putback = None
@@ -91,6 +91,8 @@ class Lex:
 						break
 
 				return Token(TokenType.SCONST, s, char)
+			if ch== "⋅":
+				return Token(TokenType.DOT, "", self.stream.tell())
 			if ch == "/":
 				return Token(TokenType.SLASH, "", self.stream.tell())
 

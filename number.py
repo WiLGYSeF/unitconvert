@@ -153,12 +153,19 @@ class Number:
 		n.units = self.units.copy()
 		return n
 
-	def string(self, converts="", space=False, caret=False, scientific=False, printunits=True, sigfig=-1, roundnum=None, prsr=None):
+	def string(self, converts="", unitseparator="space", caret=False, scientific=False, printunits=True, sigfig=-1, roundnum=None, prsr=None):
 		if sigfig >= 0 and roundnum is not None:
 			raise ValueError("cannot round and express significant figures")
 
 		n = self
 		converted = ""
+
+		usepdict = {
+			None: "",
+			"dot": "⋅",
+			"space": " "
+		}
+		usep = usepdict.get(unitseparator, "⋅")
 
 		#convert if converts option is not None
 		if converts is not None:
@@ -198,8 +205,7 @@ class Number:
 						if caret:
 							converted += "^"
 						converted += self.unitFloatToStr(c.units[key], decimaltype=prsr.decimaltype)
-					if space:
-						converted += " "
+					converted += usep
 
 			#take difference from convert units and magnitude
 			if not tempconvert:
@@ -218,8 +224,7 @@ class Number:
 					if caret:
 						converted += "^"
 					converted += self.unitFloatToStr(n.base[key], decimaltype=prsr.decimaltype)
-				if space:
-					converted += " "
+				converted += usep
 
 		if roundnum is not None:
 			nmag = round(n.magnitude, roundnum)
@@ -228,7 +233,7 @@ class Number:
 
 		magnitudestr = self.floatToStr(nmag, sigfig, scientific=scientific, decimaltype=prsr.decimaltype)
 		if printunits and len(converted) != 0:
-			magnitudestr += " " + converted.strip()
+			magnitudestr += " " + converted.rstrip("".join(usepdict.values()))
 
 		return magnitudestr
 

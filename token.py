@@ -32,6 +32,7 @@ class TokenType(Enum):
 	SCONST = "SCONST"
 	CARET = "CARET"
 	SLASH = "SLASH"
+	DOT = "DOT"
 	DONE = "DONE"
 	ERR = "ERR"
 

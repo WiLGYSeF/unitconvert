@@ -1,4 +1,4 @@
-from lex import Lex
+from lexer import Lexer
 from stringstream import StringStream
 from token import Token, TokenType
 
@@ -24,7 +24,7 @@ class Parser:
 		if numstr is None:
 			return
 
-		self.lex = Lex(StringStream(numstr))
+		self.lex = Lexer(StringStream(numstr))
 		r = self._number()
 
 		if not r:
@@ -41,9 +41,10 @@ class Parser:
 		return r
 
 	"""
-	<number> ::= <float> [ENOT <float>] {<unit>}
-	<number> ::= <float> [ENOT <float>] <unit>+ SLASH <unit>+
+	<number> ::= <float> [ENOT <float>] [<unitlist>]
+	<number> ::= <float> [ENOT <float>] <unitlist> SLASH <unitlist>
 	<unit> ::= SCONST [CARET <float>]
+	<unitlist> ::= <unit> {[DOT] <unit>}
 	"""
 	def _number(self):
 		#python doesn't like cyclical imports
@@ -79,13 +80,16 @@ class Parser:
 			if token is None or token == TokenType.DONE:
 				break
 
-			if not firstUnit and token == TokenType.SLASH:
-				if hasSlash:
-					self.error("more than one slash for units present", token.character)
-					return None
-				hasSlash = True
+			if not firstUnit:
+				if token == TokenType.SLASH:
+					if hasSlash:
+						self.error("more than one slash for units present", token.character)
+						return None
+					hasSlash = True
 
-				token = self.lex.getToken()
+					token = self.lex.getToken()
+				elif token == TokenType.DOT:
+					token = self.lex.getToken()
 
 			if token != TokenType.SCONST:
 				#self.lex.ungetToken(token)
@@ -104,7 +108,7 @@ class Parser:
 			power = 1
 			n = self._float()
 			if n is None:
-				if token != TokenType.DONE and token != TokenType.SCONST and token != TokenType.SLASH:
+				if token not in [TokenType.DONE, TokenType.SCONST, TokenType.SLASH, TokenType.DOT]:
 					#self.lex.ungetToken(token)
 					if token == TokenType.ERR:
 						self.error("unknown token", token.character)
