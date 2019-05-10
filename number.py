@@ -227,7 +227,7 @@ class Number:
 			nmag = str(n.magnitude)
 
 		magnitudestr = self.floatToStr(nmag, sigfig, scientific=scientific, decimaltype=prsr.decimaltype)
-		if printunits:
+		if printunits and len(converted) != 0:
 			magnitudestr += " " + converted.strip()
 
 		return magnitudestr

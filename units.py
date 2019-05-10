@@ -34,7 +34,7 @@ metric_units = {
 	"kat":		(1,				"katal",		{"mol": 1, "s": -1}),
 
 	"ha":		(10000,			"hectare",		{"m": 2}),
-	"L":		(0.001,			"litre",		{"m": 3}),
+	"L":		(0.001,			"liter",		{"m": 3}),
 	"t":		(1000,			"ton",			{"kg": 1}),
 
 	"bar":		(100000,		"bar",			{"kg": 1, "m": -1, "s": -2}),
@@ -47,7 +47,6 @@ metric_units = {
 metric_customary_units = {
 	"min":		(60,			"minute",		{"s": 1}),
 	"h":		(3600,			"hour",			{"s": 1}),
-	"hr":		(3600,			"hour",			{"s": 1}),
 	"d":		(86400,			"day",			{"s": 1}),
 
 	#handled elsewhere
