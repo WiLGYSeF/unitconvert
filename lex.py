@@ -74,6 +74,7 @@ class Lex:
 				while True:
 					ch = self.stream.get()
 					if ch is None:
+						#if it's a start unit char, but not end unit char
 						if not self.isEndUnitChar(s[-1]):
 							s = s[:-1]
 							self.stream.unget()
@@ -82,6 +83,7 @@ class Lex:
 					if self.isUnitChar(ch):
 						s += ch
 					else:
+						#if it's a start unit char, but not end unit char
 						if not self.isEndUnitChar(s[-1]):
 							s = s[:-1]
 							self.stream.unget()
@@ -89,6 +91,8 @@ class Lex:
 						break
 
 				return Token(TokenType.SCONST, s, char)
+			if ch == "/":
+				return Token(TokenType.SLASH, "", self.stream.tell())
 
 			return Token(TokenType.ERR, ch, self.stream.tell())
 		return Token(TokenType.DONE, "", self.stream.tell())

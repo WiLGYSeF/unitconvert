@@ -31,6 +31,7 @@ class TokenType(Enum):
 	ENOT = "ENOT"
 	SCONST = "SCONST"
 	CARET = "CARET"
+	SLASH = "SLASH"
 	DONE = "DONE"
 	ERR = "ERR"
 

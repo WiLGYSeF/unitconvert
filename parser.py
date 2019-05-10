@@ -39,8 +39,13 @@ class Parser:
 
 		return r
 
-	# <number> = <float> [ENOT <float>] {SCONST [CARET] [<float>]}
+	"""
+	<number> ::= <float> [ENOT <float>] {<unit>}
+	<number> ::= <float> [ENOT <float>] <unit>+ SLASH <unit>+
+	<unit> ::= SCONST [CARET <float>]
+	"""
 	def _number(self):
+		#python doesn't like cyclical imports
 		from number import Number
 
 		num = Number()
@@ -66,9 +71,21 @@ class Parser:
 			num.magnitude *= 10 ** n
 			token = self.lex.getToken()
 
+		firstUnit = True
+		hasSlash = False
+
 		while True:
 			if token is None or token == TokenType.DONE:
 				break
+
+			if not firstUnit and token == TokenType.SLASH:
+				if hasSlash:
+					self.error("more than one slash for units present", token.character)
+					return None
+				hasSlash = True
+
+				token = self.lex.getToken()
+
 			if token != TokenType.SCONST:
 				#self.lex.ungetToken(token)
 				if token == TokenType.ERR:
@@ -86,7 +103,7 @@ class Parser:
 			power = 1
 			n = self._float()
 			if n is None:
-				if token != TokenType.DONE and token != TokenType.SCONST:
+				if token != TokenType.DONE and token != TokenType.SCONST and token != TokenType.SLASH:
 					#self.lex.ungetToken(token)
 					if token == TokenType.ERR:
 						self.error("unknown token", token.character)
@@ -96,19 +113,24 @@ class Parser:
 			else:
 				power = n
 
+			if hasSlash:
+				power = -power
+
 			self.unitParse(num, stok.lexeme, power)
+			firstUnit = False
+
 			token = self.lex.getToken()
 
 		return num
 
 	"""
 	if decimaltype is PERIOD
-	<float> = [PLUS|MINUS] <integer> [PERIOD [ICONST]]
-	<float> = [PLUS|MINUS] PERIOD ICONST
+	<float> ::= [PLUS|MINUS] <integer> [PERIOD [ICONST]]
+	<float> ::= [PLUS|MINUS] PERIOD ICONST
 
 	if decimaltype is COMMA
-	<float> = [PLUS|MINUS] <integer> [COMMA [ICONST]]
-	<float> = [PLUS|MINUS] COMMA ICONST
+	<float> ::= [PLUS|MINUS] <integer> [COMMA [ICONST]]
+	<float> ::= [PLUS|MINUS] COMMA ICONST
 	"""
 	def _float(self):
 		negative = 1
@@ -154,10 +176,13 @@ class Parser:
 
 	"""
 	if decimaltype is PERIOD
-	<integer> = ICONST {COMMA ICONST}
+	<integer> ::= ICONST {COMMA ICONST}
 
 	if decimaltype is COMMA
-	<integer> = ICONST {PERIOD ICONST}
+	<integer> ::= ICONST {PERIOD ICONST}
+
+	if numconcatspacing is true
+	<integer> ::= ICONST {ICONST}
 
 	"""
 	def _integer(self):
