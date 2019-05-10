@@ -5,10 +5,11 @@ from token import Token, TokenType
 import units
 
 class Parser:
-	def __init__(self, system="metric", decimaltype=TokenType.PERIOD, groupingthree=True):
+	def __init__(self, system="metric", decimaltype=TokenType.PERIOD, groupingthree=True, numconcatspacing=True):
 		self.decimaltype = decimaltype
 		self.system = system
 		self.groupingthree = groupingthree
+		self.numconcatspacing = numconcatspacing
 
 		self.errmsg = []
 		self.lex = None
@@ -29,7 +30,7 @@ class Parser:
 		if not r:
 			raise NumberParseError("invalid number: " + numstr, {"messages": self.errmsg, "numstr": numstr})
 
-		#don't knowhow to parse multiple temperature units
+		#don't know how to parse multiple temperature units
 		tmptr = None
 		for key in r.units:
 			if key in units.temperature_rpn:
@@ -227,6 +228,9 @@ class Parser:
 						self.error("expected groupings of three digits", token.character)
 						return None
 
+				value = value * 10 ** len(token.lexeme) + int(token.lexeme)
+				firsttoken = None
+			elif token == TokenType.ICONST and self.numconcatspacing:
 				value = value * 10 ** len(token.lexeme) + int(token.lexeme)
 				firsttoken = None
 			else:
