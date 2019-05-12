@@ -153,7 +153,7 @@ class Number:
 		n.units = self.units.copy()
 		return n
 
-	def string(self, converts="", unitseparator="space", caret=False, scientific=False, printunits=True, sigfig=-1, roundnum=None, prsr=None):
+	def string(self, converts="", unitseparator="space", unitslash=True, caret=False, scientific=False, printunits=True, sigfig=-1, roundnum=None, prsr=None):
 		if sigfig >= 0 and roundnum is not None:
 			raise ValueError("cannot round and express significant figures")
 
@@ -195,6 +195,9 @@ class Number:
 
 					parser.temperature_rpn(n, "_K_to_" + key)
 
+			if prsr is None:
+				prsr = parser.Parser(system=self.system)
+
 			#subtract unit bases from base units and create convert string
 			for key in c.units:
 				if key in c.base:
@@ -229,7 +232,7 @@ class Number:
 		if roundnum is not None:
 			nmag = round(n.magnitude, roundnum)
 		else:
-			nmag = str(n.magnitude)
+			nmag = n.magnitude
 
 		magnitudestr = self.floatToStr(nmag, sigfig, scientific=scientific, decimaltype=prsr.decimaltype)
 		if printunits and len(converted) != 0:

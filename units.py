@@ -45,6 +45,7 @@ metric_units = {
 }
 
 metric_customary_units = {
+	"s":		(1,				"second",		{"s": 1}),
 	"min":		(60,			"minute",		{"s": 1}),
 	"h":		(3600,			"hour",			{"s": 1}),
 	"d":		(86400,			"day",			{"s": 1}),

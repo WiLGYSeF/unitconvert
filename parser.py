@@ -41,8 +41,7 @@ class Parser:
 		return r
 
 	"""
-	<number> ::= <float> [ENOT <float>] [<unitlist>]
-	<number> ::= <float> [ENOT <float>] <unitlist> SLASH <unitlist>
+	<number> ::= <float> [ENOT <float>] [<unitlist> [SLASH <unitlist>]]
 	<unit> ::= SCONST [CARET <float>]
 	<unitlist> ::= <unit> {[DOT] <unit>}
 	"""
@@ -131,11 +130,11 @@ class Parser:
 	"""
 	if decimaltype is PERIOD
 	<float> ::= [PLUS|MINUS] <integer> [PERIOD [ICONST]]
-	<float> ::= [PLUS|MINUS] PERIOD ICONST
+		| [PLUS|MINUS] PERIOD ICONST
 
 	if decimaltype is COMMA
 	<float> ::= [PLUS|MINUS] <integer> [COMMA [ICONST]]
-	<float> ::= [PLUS|MINUS] COMMA ICONST
+		| [PLUS|MINUS] COMMA ICONST
 	"""
 	def _float(self):
 		negative = 1
