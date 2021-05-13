@@ -1,4 +1,7 @@
 # unitconvert
+
+## **This project was an old coding exercise and is no longer maintained**
+
 Python module for converting units and performing basic arithmetic operations.
 This is a proof-of-concept project, and was written to practice parsing.
 You probably shouldn't use it in any real-world projects.
